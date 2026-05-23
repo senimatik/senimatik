@@ -38,13 +38,14 @@ export const generateArtworkUploadUrl = mutation({
     const walletAddress = user.walletAddress;
     const uuid = crypto.randomUUID();
 
-    // Build structured key based on type
+    // Build structured key based on type, preserving original filename
+    const safeFileName = args.fileName.replace(/[^a-zA-Z0-9._-]/g, "_");
     let key: string;
     if (args.type === "preview") {
-      key = `artworks/${walletAddress}/${uuid}/preview.webp`;
+      key = `artworks/${walletAddress}/${uuid}/${safeFileName}`;
     } else {
       // details
-      key = `artworks/${walletAddress}/${uuid}/details.webp`;
+      key = `artworks/${walletAddress}/${uuid}/${safeFileName}`;
     }
 
     // Generate presigned upload URL

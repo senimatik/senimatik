@@ -168,14 +168,14 @@ export default function PurchaseModal({
         selectedShippingIndex: selectedShippingIndex ?? undefined,
         shippingAddress: requiresShipping
           ? {
-              fullName: address.fullName,
-              street: address.street,
-              city: address.city,
-              state: address.state,
-              zipCode: address.zipCode,
-              country: address.country,
-              phone: address.phone || undefined,
-            }
+            fullName: address.fullName,
+            street: address.street,
+            city: address.city,
+            state: address.state,
+            zipCode: address.zipCode,
+            country: address.country,
+            phone: address.phone || undefined,
+          }
           : undefined,
       });
       setResult({ verificationId: res.verificationId });
@@ -206,16 +206,16 @@ export default function PurchaseModal({
       >
         {/* Header */}
         <div className="flex items-center justify-between px-6 py-4 border-b border-black/5">
-          <h2 className="font-pixel text-[10px] uppercase tracking-[0.3em]">
+          <h2 className="font-pixel text-sm uppercase tracking-widest">
             {result
               ? "License Issued"
               : step === "profile_gate"
-              ? "Complete Profile"
-              : step === "review"
-              ? "Shipping Details"
-              : step === "loading"
-              ? "Loading..."
-              : "Confirm Purchase"}
+                ? "Complete Profile"
+                : step === "review"
+                  ? "Shipping Details"
+                  : step === "loading"
+                    ? "Loading..."
+                    : "Confirm Purchase"}
           </h2>
           <button
             onClick={onClose}
@@ -240,12 +240,12 @@ export default function PurchaseModal({
               </div>
               <div>
                 <p className="font-bold text-lg tracking-tight mb-1">Purchase complete</p>
-                <p className="text-sm text-zinc-500">
+                <p className="text-sm text-muted">
                   Your license has been issued and is now verifiable.
                 </p>
               </div>
               <div className="w-full bg-zinc-50 border border-black/5 p-4 text-left">
-                <p className="font-pixel text-[9px] uppercase tracking-widest text-zinc-400 mb-2">
+                <p className="font-pixel text-xs uppercase tracking-widest text-muted mb-2">
                   Verification ID
                 </p>
                 <p className="font-mono text-sm font-bold break-all">
@@ -258,7 +258,7 @@ export default function PurchaseModal({
                     router.push(`/verify/${result.verificationId}`);
                     onClose();
                   }}
-                  className="w-full bg-black text-white text-sm font-medium py-3 hover:bg-zinc-800 transition-colors"
+                  className="w-full bg-primary text-white text-sm font-pixel py-3 hover:bg-primary/80 transition-colors cursor-pointer"
                 >
                   View Certificate
                 </button>
@@ -267,7 +267,7 @@ export default function PurchaseModal({
                     router.push("/purchase");
                     onClose();
                   }}
-                  className="w-full bg-zinc-50 text-sm font-medium py-3 hover:bg-zinc-100 transition-colors"
+                  className="w-full bg-zinc-50 text-sm font-medium py-3 hover:bg-zinc-100 transition-colors cursor-pointer"
                 >
                   My Purchases
                 </button>
@@ -301,21 +301,21 @@ export default function PurchaseModal({
                 <WarningCircleIcon size={32} weight="fill" className="text-amber-500" />
               </div>
               <div>
-                <p className="font-bold text-lg tracking-tight mb-1">Complete your profile first</p>
-                <p className="text-sm text-zinc-500">
+                <p className="font-bold text-lg mb-1">Complete your profile first</p>
+                <p className="text-sm text-muted">
                   Add a shipping address to your profile before purchasing physical artworks.
                 </p>
               </div>
               <div className="flex flex-col gap-2 w-full">
                 <button
                   onClick={() => { router.push("/settings"); onClose(); }}
-                  className="w-full bg-black text-white text-sm font-medium py-3 hover:bg-zinc-800 transition-colors"
+                  className="w-full bg-primary text-white text-sm font-medium py-3 hover:bg-primary/80 transition-colors cursor-pointer"
                 >
                   Go to Settings
                 </button>
                 <button
                   onClick={onClose}
-                  className="w-full text-sm text-zinc-400 py-2 hover:text-black transition-colors"
+                  className="w-full text-sm text-muted py-2 hover:text-black transition-colors cursor-pointer"
                 >
                   Cancel
                 </button>
@@ -332,33 +332,9 @@ export default function PurchaseModal({
               exit={{ opacity: 0, x: -20 }}
               className="p-6 flex flex-col gap-5 max-h-[70vh] overflow-y-auto"
             >
-              {/* Price summary */}
-              <div className="bg-zinc-50 border border-black/5 p-4 space-y-1.5">
-                <div className="flex justify-between text-sm">
-                  <span className="opacity-60">{artwork.name}</span>
-                  <span className="font-medium">{basePrice} USD</span>
-                </div>
-                {selectedPrintSize && (
-                  <div className="flex justify-between text-sm">
-                    <span className="opacity-60">{selectedPrintSize.label}</span>
-                    <span>+{printAddon} USD</span>
-                  </div>
-                )}
-                {selectedShipping && (
-                  <div className="flex justify-between text-sm capitalize">
-                    <span className="opacity-60">{selectedShipping.zone} shipping</span>
-                    <span>+{shippingCost} USD</span>
-                  </div>
-                )}
-                <div className="flex justify-between font-bold text-sm pt-2 border-t border-black/5">
-                  <span>Total</span>
-                  <span>{totalPrice} USD</span>
-                </div>
-              </div>
-
               {/* Address form */}
               <div className="space-y-3">
-                <p className="font-pixel text-[9px] uppercase tracking-widest text-zinc-400">
+                <p className="font-pixel text-sm uppercase tracking-widest text-zinc-400">
                   Shipping Address
                 </p>
                 <InputField
@@ -416,11 +392,35 @@ export default function PurchaseModal({
                 />
               </div>
 
+                            {/* Price summary */}
+              <div className="bg-zinc-50 border border-black/5 p-4 space-y-1.5">
+                <div className="flex justify-between text-sm">
+                  <span className="opacity-60">{artwork.name}</span>
+                  <span className="font-medium">{basePrice} USD</span>
+                </div>
+                {selectedPrintSize && (
+                  <div className="flex justify-between text-sm">
+                    <span className="opacity-60">{selectedPrintSize.label}</span>
+                    <span>+{printAddon} USD</span>
+                  </div>
+                )}
+                {selectedShipping && (
+                  <div className="flex justify-between text-sm capitalize">
+                    <span className="opacity-60">{selectedShipping.zone} shipping</span>
+                    <span>+{shippingCost} USD</span>
+                  </div>
+                )}
+                <div className="flex justify-between font-bold text-sm pt-2 border-t border-black/5">
+                  <span>Total</span>
+                  <span>{totalPrice} USD</span>
+                </div>
+              </div>
+
               <button
                 onClick={() => {
                   if (validateAddress()) setStep("confirm");
                 }}
-                className="w-full bg-black text-white text-sm font-medium py-3 hover:bg-zinc-800 transition-colors"
+                className="w-full bg-primary text-white text-sm font-pixel py-3 hover:bg-primary/80 transition-colors cursor-pointer"
               >
                 Continue to Purchase
               </button>
@@ -445,29 +445,29 @@ export default function PurchaseModal({
                   className="w-16 h-16 object-cover shrink-0 bg-zinc-100"
                 />
                 <div className="flex-1 min-w-0">
-                  <p className="font-bold text-sm tracking-tight truncate">{artwork.name}</p>
-                  <p className="text-xs text-zinc-500 capitalize mt-0.5">
+                  <p className="font-bold text-base truncate">{artwork.name}</p>
+                  <p className="text-sm text-muted capitalize mt-0.5">
                     {selectedLicenseType.replace(/_/g, " ")} license
                   </p>
-                  <p className="text-xs text-zinc-500 capitalize">Delivery: {deliveryType}</p>
+                  <p className="text-sm text-muted capitalize">Delivery: {deliveryType}</p>
                 </div>
               </div>
 
               {/* Price breakdown */}
               <div className="bg-zinc-50 border border-black/5 p-4 space-y-1.5">
                 <div className="flex justify-between text-sm">
-                  <span className="opacity-60">Base price</span>
+                  <span className="text-muted">Base price</span>
                   <span>{basePrice} USD</span>
                 </div>
                 {selectedPrintSize && (
                   <div className="flex justify-between text-sm">
-                    <span className="opacity-60">{selectedPrintSize.label} print</span>
+                    <span className="text-muted">{selectedPrintSize.label} print</span>
                     <span>+{printAddon} USD</span>
                   </div>
                 )}
                 {selectedShipping && (
                   <div className="flex justify-between text-sm">
-                    <span className="opacity-60 capitalize">
+                    <span className="text-muted capitalize">
                       {selectedShipping.zone} ({selectedShipping.estimatedDays}d)
                     </span>
                     <span>+{shippingCost} USD</span>
@@ -483,12 +483,12 @@ export default function PurchaseModal({
               {requiresShipping && (
                 <div className="bg-zinc-50 border border-black/5 p-4 text-sm">
                   <div className="flex justify-between items-center mb-2">
-                    <p className="font-pixel text-[9px] uppercase tracking-widest text-zinc-400">
+                    <p className="font-pixel text-sm uppercase tracking-widest text-primary">
                       Ships to
                     </p>
                     <button
                       onClick={() => setStep("review")}
-                      className="font-pixel text-[9px] uppercase tracking-widest text-zinc-400 hover:text-black transition-colors"
+                      className="font-pixel text-sm uppercase tracking-widest text-muted hover:text-primary hover:underline transition-colors cursor-pointer"
                     >
                       Edit
                     </button>
@@ -508,15 +508,15 @@ export default function PurchaseModal({
                 </p>
               )}
 
-              <p className="text-[10px] text-zinc-400 text-center">
+              {/* <p className="text-[10px] text-zinc-400 text-center">
                 Simulated purchase — license issued instantly.
-              </p>
+              </p> */}
 
               <div className="flex flex-col gap-2">
                 <button
                   onClick={handleConfirm}
                   disabled={isLoading}
-                  className="w-full bg-black text-white text-sm font-medium py-3 hover:bg-zinc-800 transition-colors disabled:opacity-50"
+                  className="w-full bg-primary text-white text-sm font-pixel py-3 hover:bg-primary/80 transition-colors disabled:opacity-50 cursor-pointer"
                 >
                   {isLoading
                     ? "Processing..."
@@ -525,7 +525,7 @@ export default function PurchaseModal({
                 {requiresShipping && (
                   <button
                     onClick={() => setStep("review")}
-                    className="w-full text-sm text-zinc-400 py-2 hover:text-black transition-colors"
+                    className="w-full text-sm text-zinc-400 py-2 hover:text-black transition-colors cursor-pointer"
                   >
                     Back
                   </button>
@@ -554,7 +554,7 @@ function InputField({
 }) {
   return (
     <div>
-      <label className="block font-pixel text-[9px] uppercase tracking-widest text-zinc-400 mb-1">
+      <label className="block font-pixel text-xs text-primary uppercase tracking-widest mb-1">
         {label}
       </label>
       <input

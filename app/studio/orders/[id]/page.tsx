@@ -28,10 +28,10 @@ function formatDate(ts: number) {
 type OrderStatus = "pending" | "processing" | "shipped" | "delivered";
 
 const STATUS_CONFIG: Record<OrderStatus, { label: string; color: string; icon: React.ReactNode }> = {
-  pending:    { label: "Pending",    color: "bg-amber-50 text-amber-600",  icon: <ClockIcon size={16} weight="fill" /> },
-  processing: { label: "Processing", color: "bg-blue-50 text-blue-600",    icon: <PackageIcon size={16} weight="fill" /> },
-  shipped:    { label: "Shipped",    color: "bg-purple-50 text-purple-600", icon: <TruckIcon size={16} weight="fill" /> },
-  delivered:  { label: "Delivered",  color: "bg-green-50 text-green-600",  icon: <CheckCircleIcon size={16} weight="fill" /> },
+  pending: { label: "Pending", color: "bg-amber-50 text-amber-600", icon: <ClockIcon size={16} weight="fill" /> },
+  processing: { label: "Processing", color: "bg-blue-50 text-blue-600", icon: <PackageIcon size={16} weight="fill" /> },
+  shipped: { label: "Shipped", color: "bg-purple-50 text-purple-600", icon: <TruckIcon size={16} weight="fill" /> },
+  delivered: { label: "Delivered", color: "bg-green-50 text-green-600", icon: <CheckCircleIcon size={16} weight="fill" /> },
 };
 
 export default function OrderDetailPage() {
@@ -77,7 +77,7 @@ export default function OrderDetailPage() {
   if (!isConnected) {
     return (
       <div className="max-w-7xl mx-auto px-4 py-40 flex flex-col items-center gap-4">
-        <p className="font-pixel text-[10px] uppercase tracking-[0.3em] opacity-40">
+        <p className="font-pixel text-base uppercase tracking-widest text-muted">
           Connect wallet to view order details
         </p>
       </div>
@@ -89,11 +89,11 @@ export default function OrderDetailPage() {
       <div className="max-w-7xl mx-auto px-4 py-16">
         <button
           onClick={() => router.back()}
-          className="flex items-center gap-2 text-sm text-zinc-500 hover:text-black transition-colors mb-10"
+          className="flex items-center gap-2 text-base text-muted hover:text-primary transition-colors mb-10"
         >
           <ArrowLeftIcon size={16} /> Back to orders
         </button>
-        <p className="text-sm text-zinc-400">Loading...</p>
+        <p className="text-base text-muted">Loading...</p>
       </div>
     );
   }
@@ -107,16 +107,16 @@ export default function OrderDetailPage() {
       {/* Back button */}
       <button
         onClick={() => router.back()}
-        className="flex items-center gap-2 text-sm text-zinc-500 hover:text-black transition-colors mb-8"
+        className="flex items-center gap-2 text-base text-muted hover:text-primary transition-colors mb-8"
       >
         <ArrowLeftIcon size={16} /> Back to orders
       </button>
 
       {/* Order header */}
-      <div className="border border-black/5 rounded-xl p-6 mb-8">
-        <div className="flex gap-6 items-start">
+      <div className="border border-black/5 p-6 mb-8">
+        <div className="flex lg:flex-row flex-col gap-6 items-start">
           {/* Artwork image */}
-          <div className="relative w-20 h-20 bg-zinc-100 rounded-lg overflow-hidden shrink-0">
+          <div className="relative w-20 h-20 bg-zinc-100 overflow-hidden shrink-0">
             {sale.artworkPreviewKey && (
               <Image
                 src={`${R2_URL}/${sale.artworkPreviewKey}`}
@@ -129,18 +129,18 @@ export default function OrderDetailPage() {
           </div>
 
           {/* Order info */}
-          <div className="flex-1">
+          <div className="flex-1 w-full">
             <div className="flex items-start justify-between gap-4 mb-3">
               <div>
                 <h1 className="text-2xl font-bold tracking-tight mb-1">{sale.artworkName}</h1>
-                <p className="text-sm text-zinc-500">
-                  Buyer: {sale.buyerDisplayName || `${sale.buyerWallet.slice(0, 6)}...${sale.buyerWallet.slice(-4)}`}
+                <p className="text-sm text-muted">
+                  {sale.buyerDisplayName || `${sale.buyerWallet.slice(0, 6)}...${sale.buyerWallet.slice(-4)}`}
                 </p>
               </div>
               {sc && (
-                <div className={`flex items-center gap-2 px-3 py-1.5 rounded-lg ${sc.color}`}>
+                <div className={`flex items-center gap-2 px-3 py-1.5 ${sc.color}`}>
                   {sc.icon}
-                  <span className="text-sm font-medium">{sc.label}</span>
+                  <span className="text-xs font-pixel font-medium">{sc.label}</span>
                 </div>
               )}
             </div>
@@ -148,20 +148,20 @@ export default function OrderDetailPage() {
             {/* Order details */}
             <div className="grid grid-cols-2 sm:grid-cols-4 gap-4 pt-3 border-t border-black/5">
               <div>
-                <p className="font-pixel text-[9px] uppercase tracking-widest text-zinc-400 mb-1">License Type</p>
-                <p className="text-sm font-medium">{sale.licenseType.replace(/_/g, " ")}</p>
+                <p className="font-pixel text-xs uppercase tracking-widest text-muted mb-1">License Type</p>
+                <p className="text-base font-medium capitalize">{sale.licenseType.replace(/_/g, " ")}</p>
               </div>
               <div>
-                <p className="font-pixel text-[9px] uppercase tracking-widest text-zinc-400 mb-1">Delivery</p>
-                <p className="text-sm font-medium capitalize">{sale.deliveryType}</p>
+                <p className="font-pixel text-xs uppercase tracking-widest text-muted mb-1">Delivery</p>
+                <p className="text-base font-medium capitalize">{sale.deliveryType}</p>
               </div>
               <div>
-                <p className="font-pixel text-[9px] uppercase tracking-widest text-zinc-400 mb-1">Price</p>
-                <p className="text-sm font-medium">{sale.totalPrice} USD</p>
+                <p className="font-pixel text-xs uppercase tracking-widest text-muted mb-1">Price</p>
+                <p className="text-base font-medium">{sale.totalPrice} USD</p>
               </div>
               <div>
-                <p className="font-pixel text-[9px] uppercase tracking-widest text-zinc-400 mb-1">Date</p>
-                <p className="text-sm font-medium">{formatDate(sale.createdAt)}</p>
+                <p className="font-pixel text-xs uppercase tracking-widest text-muted mb-1">Date</p>
+                <p className="text-base font-medium">{formatDate(sale.createdAt)}</p>
               </div>
             </div>
           </div>
@@ -173,18 +173,18 @@ export default function OrderDetailPage() {
         <>
           {/* Shipping address */}
           {sale.shippingAddress && (
-            <div className="border border-black/5 rounded-xl p-6 mb-8">
+            <div className="border border-black/5 p-6 mb-8">
               <h2 className="text-lg font-bold tracking-tight mb-4">Shipping Address</h2>
-              <div className="space-y-2 text-sm">
+              <div className="space-y-2 text-base">
                 <p className="font-medium">{sale.shippingAddress.fullName}</p>
-                <p className="text-zinc-600">{sale.shippingAddress.street}</p>
-                <p className="text-zinc-600">
+                <p className="text-muted">{sale.shippingAddress.street}</p>
+                <p className="text-muted">
                   {sale.shippingAddress.city}, {sale.shippingAddress.state} {sale.shippingAddress.zipCode}
                 </p>
-                <p className="text-zinc-600">{sale.shippingAddress.country}</p>
-                {sale.shippingAddress.phone && <p className="text-zinc-600">{sale.shippingAddress.phone}</p>}
+                <p className="text-muted">{sale.shippingAddress.country}</p>
+                {sale.shippingAddress.phone && <p className="text-muted">{sale.shippingAddress.phone}</p>}
                 {sale.selectedShipping && (
-                  <p className="text-xs text-zinc-500 pt-2 border-t border-black/5 mt-3">
+                  <p className="text-base text-muted pt-2 border-t border-black/5 mt-3 capitalize">
                     {sale.selectedShipping.zone.replace(/_/g, " ")} · est. {sale.selectedShipping.estimatedDays} days
                   </p>
                 )}
@@ -194,30 +194,30 @@ export default function OrderDetailPage() {
 
           {/* Tracking info */}
           {sale.courierName && sale.trackingNumber && (
-            <div className="border border-black/5 rounded-xl p-6 mb-8">
+            <div className="border border-black/5 p-6 mb-8">
               <h2 className="text-lg font-bold tracking-tight mb-4">Tracking Information</h2>
               <div className="space-y-3">
                 <div>
-                  <p className="font-pixel text-[9px] uppercase tracking-widest text-zinc-400 mb-1">Courier</p>
-                  <p className="text-sm font-medium">{sale.courierName}</p>
+                  <p className="font-pixel text-xs uppercase tracking-widest text-zinc-400 mb-1">Courier</p>
+                  <p className="text-base font-medium">{sale.courierName}</p>
                 </div>
                 <div>
-                  <p className="font-pixel text-[9px] uppercase tracking-widest text-zinc-400 mb-1">Tracking Number</p>
-                  <p className="text-sm font-mono">{sale.trackingNumber}</p>
+                  <p className="font-pixel text-xs uppercase tracking-widest text-zinc-400 mb-1">Tracking Number</p>
+                  <p className="text-base font-mono">{sale.trackingNumber}</p>
                 </div>
               </div>
             </div>
           )}
 
           {/* Action buttons */}
-          <div className="border border-black/5 rounded-xl p-6">
+          <div className="border border-black/5 p-6">
             <h2 className="text-lg font-bold tracking-tight mb-4">Order Status</h2>
             <div className="flex flex-col gap-3">
               {status === "pending" && (
                 <button
                   disabled={isUpdating}
                   onClick={() => handleStatusUpdate("processing")}
-                  className="text-sm font-medium px-4 py-3 bg-blue-50 text-blue-600 rounded-lg hover:bg-blue-100 transition-colors disabled:opacity-50 w-full"
+                  className="text-base font-medium px-4 py-3 bg-blue-50 text-blue-600 rounded-lg hover:bg-blue-100 transition-colors disabled:opacity-50 w-full"
                 >
                   {isUpdating ? "Updating..." : "Mark as Processing"}
                 </button>
@@ -227,14 +227,14 @@ export default function OrderDetailPage() {
                 <div className="flex gap-3">
                   <button
                     onClick={() => setIsShippingFormOpen(true)}
-                    className="flex-1 text-sm font-medium px-4 py-3 bg-purple-50 text-purple-600 rounded-lg hover:bg-purple-100 transition-colors"
+                    className="flex-1 text-base font-medium px-4 py-3 bg-purple-50 text-purple-600 hover:bg-purple-100 transition-colors cursor-pointer"
                   >
                     Mark as Shipped
                   </button>
                   <button
                     disabled={isUpdating}
                     onClick={() => handleStatusUpdate("pending")}
-                    className="flex-1 text-sm font-medium px-4 py-3 text-red-500 hover:bg-red-50 rounded-lg hover:border hover:border-red-200 transition-colors disabled:opacity-50"
+                    className="flex-1 text-base font-medium px-4 py-3 text-red-500 hover:bg-red-50 hover:border hover:border-red-200 transition-colors disabled:opacity-50 cursor-pointer"
                   >
                     {isUpdating ? "Reverting..." : "Revert to Pending"}
                   </button>
@@ -242,35 +242,35 @@ export default function OrderDetailPage() {
               )}
 
               {status === "processing" && isShippingFormOpen && (
-                <div className="flex flex-col gap-3 p-4 bg-zinc-50 rounded-xl">
-                  <p className="font-pixel text-[9px] uppercase tracking-widest text-zinc-400">Enter shipping information</p>
+                <div className="flex flex-col gap-3 p-4 bg-zinc-50">
+                  <p className="font-pixel text-xs uppercase tracking-widest text-zinc-400">Enter shipping information</p>
                   <input
                     type="text"
                     placeholder="Courier name (e.g. Pos Malaysia)"
                     value={courierName}
                     onChange={(e) => setCourierName(e.target.value)}
-                    className="border border-black/10 rounded-lg px-3 py-2 text-sm outline-none focus:border-black transition-colors"
+                    className="border border-black/10 px-3 py-2 text-base outline-none focus:border-black transition-colors"
                   />
                   <input
                     type="text"
                     placeholder="Tracking number"
                     value={trackingNumber}
                     onChange={(e) => setTrackingNumber(e.target.value)}
-                    className="border border-black/10 rounded-lg px-3 py-2 text-sm outline-none focus:border-black transition-colors"
+                    className="border border-black/10 px-3 py-2 text-base outline-none focus:border-black transition-colors"
                   />
                   <div className="flex gap-2">
                     <button
-                      disabled={isUpdating || !courierName.trim() || !trackingNumber.trim()}
-                      onClick={() => handleStatusUpdate("shipped", courierName, trackingNumber)}
-                      className="flex-1 text-sm font-medium px-4 py-2 bg-black text-white rounded-lg hover:bg-zinc-800 transition-colors disabled:opacity-50"
-                    >
-                      {isUpdating ? "Saving..." : "Confirm Shipment"}
-                    </button>
-                    <button
                       onClick={() => { setIsShippingFormOpen(false); setCourierName(""); setTrackingNumber(""); }}
-                      className="flex-1 text-sm font-medium px-4 py-2 text-zinc-400 hover:text-black transition-colors"
+                      className="flex-1 text-base font-medium px-4 py-3 text-zinc-400 hover:text-black transition-colors cursor-pointer"
                     >
                       Cancel
+                    </button>
+                    <button
+                      disabled={isUpdating || !courierName.trim() || !trackingNumber.trim()}
+                      onClick={() => handleStatusUpdate("shipped", courierName, trackingNumber)}
+                      className="flex-1 text-base font-medium px-4 py-3 bg-black text-white hover:bg-zinc-800 transition-colors disabled:opacity-50 cursor-pointer"
+                    >
+                      {isUpdating ? "Saving..." : "Confirm Shipment"}
                     </button>
                   </div>
                 </div>
@@ -280,14 +280,14 @@ export default function OrderDetailPage() {
                 <button
                   disabled={isUpdating}
                   onClick={() => handleStatusUpdate("delivered")}
-                  className="text-sm font-medium px-4 py-3 bg-green-50 text-green-600 rounded-lg hover:bg-green-100 transition-colors disabled:opacity-50 w-full"
+                  className="text-base font-medium px-4 py-3 bg-green-50 text-green-600 hover:bg-green-100 transition-colors disabled:opacity-50 cursor-pointer"
                 >
                   {isUpdating ? "Updating..." : "Mark as Delivered"}
                 </button>
               )}
 
               {status === "delivered" && (
-                <div className="text-sm text-zinc-400 font-pixel uppercase tracking-widest text-center py-3">
+                <div className="text-base text-green-600 font-pixel uppercase tracking-widest text-center py-3">
                   ✓ Order completed
                 </div>
               )}
@@ -298,9 +298,9 @@ export default function OrderDetailPage() {
 
       {/* Digital orders */}
       {!isPhysical && (
-        <div className="border border-black/5 rounded-xl p-6">
+        <div className="border border-black/5 p-6">
           <h2 className="text-lg font-bold tracking-tight mb-3">Digital Delivery</h2>
-          <p className="text-sm text-zinc-600">
+          <p className="text-base text-muted">
             This is a digital order. No shipping required.
           </p>
         </div>

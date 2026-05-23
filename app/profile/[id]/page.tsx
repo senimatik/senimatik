@@ -18,6 +18,7 @@ import { useCurrentUser } from "@/lib/context/UserContext";
 import { useQuery } from "convex/react";
 import { api } from "@/convex/_generated/api";
 import { useWalletAddress } from "@/lib/hooks/useWalletAddress";
+import { resolveR2PublicUrl } from "@/lib/r2-public-url";
 
 type Tab = "collect" | "create";
 
@@ -49,13 +50,7 @@ export default function ProfilePage() {
     isOwnProfile && walletAddress ? { walletAddress } : "skip"
   );
 
-  const getAvatarUrl = (avatarUrl?: string | null) => {
-    if (!avatarUrl) return null;
-    if (avatarUrl.startsWith("http")) return avatarUrl;
-    return `${R2_PUBLIC_URL}/${avatarUrl}`;
-  };
-
-  const avatarUrl = getAvatarUrl(displayUser?.avatarUrl);
+  const avatarUrl = resolveR2PublicUrl(displayUser?.avatarUrl);
   const userBio = (displayUser as { bio?: string } | undefined)?.bio;
   const userSocialUrl = (displayUser as { socialUrl?: string } | undefined)?.socialUrl;
 
@@ -63,8 +58,8 @@ export default function ProfilePage() {
     <main className="min-h-screen">
       <Navbar variant="dark" />
 
-      <div className="max-w-7xl mx-auto mt-10 lg:mt-20 px-4">
-        <div className="flex flex-col lg:flex-row gap-24 lg:gap-32">
+      <div className="w-full mx-auto mt-10 mb-20 lg:mt-12 px-4 lg:px-12">
+        <div className="flex flex-col lg:flex-row gap-12 2xl:gap-24">
           {/* Sidebar */}
           <aside className="w-full lg:w-80 flex flex-col gap-12 shrink-0">
             {/* Avatar */}
@@ -89,7 +84,7 @@ export default function ProfilePage() {
             {/* Info */}
             <div className="space-y-8">
               <div className="space-y-4">
-                <h1 className="text-4xl md:text-5xl font-medium tracking-tight leading-tight">
+                <h1 className="text-4xl font-medium tracking-tight leading-tight">
                   {displayUser?.displayName ?? "Anonymous"}
                 </h1>
                 {displayUser?.walletAddress && (
@@ -101,16 +96,16 @@ export default function ProfilePage() {
                     {displayUser.walletAddress.slice(0, 6)}...{displayUser.walletAddress.slice(-4)}
                   </Button>
                 )}
-                {isOwnProfile && role && role !== "user" && (
-                  <span className="inline-block text-[9px] font-pixel uppercase tracking-widest px-2 py-1 bg-zinc-100 text-zinc-500 rounded">
+                {/* {isOwnProfile && role && role !== "user" && (
+                  <span className="inline-block text-[9px] uppercase tracking-widest px-2 py-1 bg-zinc-100 text-muted rounded">
                     {role.replace("_", " ")}
                   </span>
-                )}
+                )} */}
               </div>
 
               {userBio && (
-                <p className="text-zinc-400 text-sm leading-relaxed font-light max-w-xs">
-                  {userBio}
+                <p className="text-muted text-sm leading-relaxed font-light max-w-xs">
+                  {userBio.length > 160 ? `${userBio.slice(0, 160)}...` : userBio}
                 </p>
               )}
 
@@ -121,7 +116,7 @@ export default function ProfilePage() {
                     href={userSocialUrl}
                     target="_blank"
                     rel="noopener noreferrer"
-                    className="text-zinc-500 hover:text-white transition-colors"
+                    className="text-muted hover:text-primary transition-colors"
                   >
                     <GlobeIcon size={20} weight="light" />
                   </a>
@@ -132,15 +127,15 @@ export default function ProfilePage() {
             {/* Stats */}
             <div className="space-y-6 pt-8 border-t border-white/5">
               <div className="flex justify-between items-baseline">
-                <span className="text-[10px] font-pixel uppercase tracking-widest text-zinc-600">
+                <span className="text-xs uppercase tracking-widest text-primary">
                   Joined
                 </span>
-                <span className="text-sm font-medium text-zinc-300">
+                <span className="text-sm font-medium text-muted">
                   {displayUser?.createdAt
                     ? new Date(displayUser.createdAt).toLocaleDateString("en-US", {
-                        month: "short",
-                        year: "numeric",
-                      })
+                      month: "short",
+                      year: "numeric",
+                    })
                     : "—"}
                 </span>
               </div>
@@ -154,11 +149,10 @@ export default function ProfilePage() {
                 <button
                   key={tab}
                   onClick={() => setActiveTab(tab)}
-                  className={`pb-6 text-sm uppercase font-pixel tracking-[0.2em] transition-all relative ${
-                    activeTab === tab
-                      ? "text-black font-bold"
-                      : "text-zinc-600 hover:text-zinc-400"
-                  }`}
+                  className={`pb-6 text-sm uppercase tracking-widest transition-all relative ${activeTab === tab
+                      ? "text-primary font-bold"
+                      : "text-muted hover:text-primary"
+                    }`}
                 >
                   {tab}
                   {activeTab === tab && (
@@ -179,7 +173,7 @@ export default function ProfilePage() {
                   animate={{ opacity: 1, x: 0 }}
                   exit={{ opacity: 0, x: -10 }}
                   transition={{ duration: 0.4, ease: "easeOut" }}
-                  className="h-full flex flex-col justify-center"
+                  className="h-full flex flex-col justify-start"
                 >
                   {activeTab === "collect" ? (
                     isOwnProfile && myPurchases === undefined ? (
@@ -204,15 +198,15 @@ export default function ProfilePage() {
 
                           return (
                             <>
-                              <div className="space-y-2">
+                              {/* <div className="space-y-2">
                                 <h2 className="text-3xl font-medium tracking-tight text-black">
                                   Collected
                                 </h2>
-                                <p className="text-zinc-500 text-sm">
+                                <p className="text-muted text-sm">
                                   {uniqueArtworks.length} artwork{uniqueArtworks.length !== 1 ? "s" : ""} in your collection ({myPurchases.length} piece{myPurchases.length !== 1 ? "s" : ""})
                                 </p>
-                              </div>
-                              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+                              </div> */}
+                              <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 2xl:grid-cols-4 gap-8">
                                 {uniqueArtworks.map(({ purchase, count }) => (
                                   <div
                                     key={purchase._id}
@@ -221,7 +215,7 @@ export default function ProfilePage() {
                                   >
                                     {count > 1 && (
                                       <div className="absolute top-4 right-4 z-10 bg-black/70 text-white rounded-full w-8 h-8 flex items-center justify-center backdrop-blur-sm">
-                                        <span className="text-[10px] font-pixel font-bold">×{count}</span>
+                                        <span className="text-xs font-pixel font-bold">×{count}</span>
                                       </div>
                                     )}
                                     <div className="relative bg-zinc-100 overflow-hidden mb-4 border border-black/5 aspect-square">
@@ -234,30 +228,30 @@ export default function ProfilePage() {
                                           sizes="(max-width: 768px) 100vw, (max-width: 1024px) 50vw, 33vw"
                                         />
                                       )}
-                                      <div className="absolute top-4 left-4">
+                                      {/* <div className="absolute top-4 left-4">
                                         <span className="inline-block text-[9px] font-pixel uppercase tracking-widest px-3 py-1 bg-black/70 text-white rounded backdrop-blur-sm">
                                           {purchase.licenseType.replace(/_/g, " ")}
                                         </span>
-                                      </div>
+                                      </div> */}
                                     </div>
                                     <div className="space-y-1">
-                                      <h3 className="font-medium text-black line-clamp-1">
+                                      <h3 className="text-lg 2xl:text-2xl font-medium text-black line-clamp-1">
                                         {purchase.artworkName}
                                       </h3>
-                                      <div className="flex items-center justify-between">
-                                        <span className="text-xs text-zinc-400 capitalize">{purchase.deliveryType}</span>
+                                      {/* <div className="flex items-center justify-between">
+                                        <span className="text-xs text-muted capitalize">{purchase.deliveryType}</span>
                                         {purchase.verificationId && (
                                           <button
                                             onClick={(e) => {
                                               e.stopPropagation();
                                               router.push(`/verify/${purchase.verificationId}`);
                                             }}
-                                            className="text-[10px] font-pixel uppercase tracking-widest text-zinc-400 hover:text-black transition-colors"
+                                            className="text-xs font-pixel uppercase tracking-widest text-muted hover:text-black transition-colors"
                                           >
                                             Verify
                                           </button>
                                         )}
-                                      </div>
+                                      </div> */}
                                     </div>
                                   </div>
                                 ))}
@@ -267,27 +261,27 @@ export default function ProfilePage() {
                         })()}
                       </div>
                     ) : (
-                    <div className="max-w-md space-y-8">
-                      <div className="space-y-4">
-                        <h2 className="text-3xl font-medium tracking-tight text-black">
-                          The vault is empty.
-                        </h2>
-                        <p className="text-zinc-500 text-sm leading-relaxed max-w-sm">
-                          {isOwnProfile
-                            ? "Start curating your digital legacy. Every piece you acquire is cryptographically secured on the protocol."
-                            : "This collector has not acquired any artworks yet."}
-                        </p>
+                      <div className="max-w-md space-y-8">
+                        <div className="space-y-4 mt-24">
+                          <h2 className="text-3xl font-medium tracking-tight text-black">
+                            The vault is empty.
+                          </h2>
+                          <p className="text-muted text-sm leading-relaxed max-w-sm">
+                            {isOwnProfile
+                              ? "Start curating your digital legacy. Every piece you acquire is cryptographically secured on the protocol."
+                              : "This collector has not acquired any artworks yet."}
+                          </p>
+                        </div>
+                        {isOwnProfile && (
+                          <Button
+                            variant="default"
+                            size="main"
+                            onClick={() => router.push("/discover")}
+                          >
+                            Explore Gallery
+                          </Button>
+                        )}
                       </div>
-                      {isOwnProfile && (
-                        <Button
-                          variant="default"
-                          size="main"
-                          onClick={() => router.push("/discover")}
-                        >
-                          Explore Gallery
-                        </Button>
-                      )}
-                    </div>
                     )
                   ) : (
                     <div className="w-full space-y-8">
@@ -299,7 +293,7 @@ export default function ProfilePage() {
                                 <h2 className="text-3xl font-medium tracking-tight text-black">
                                   Your Creations
                                 </h2>
-                                <p className="text-zinc-500 text-sm leading-relaxed">
+                                <p className="text-muted text-sm leading-relaxed">
                                   Manage and review your published artworks.
                                 </p>
                               </div>
@@ -323,7 +317,7 @@ export default function ProfilePage() {
                                           sizes="(max-width: 768px) 100vw, (max-width: 1024px) 50vw, 33vw"
                                         />
                                         <div className="absolute top-4 left-4">
-                                          <span className="inline-block text-[9px] font-pixel uppercase tracking-widest px-3 py-1 bg-green-100 text-green-800 rounded">
+                                          <span className="inline-block text-xs font-pixel uppercase tracking-widest px-3 py-1 bg-green-100 text-green-800 rounded">
                                             Minted
                                           </span>
                                         </div>
@@ -343,11 +337,11 @@ export default function ProfilePage() {
                             </div>
                           ) : (
                             <div className="max-w-md space-y-8">
-                              <div className="space-y-4">
+                              <div className="space-y-4 mt-24">
                                 <h2 className="text-3xl font-medium tracking-tight text-black text-balance">
                                   Ready for your first creation.
                                 </h2>
-                                <p className="text-zinc-500 text-sm leading-relaxed">
+                                <p className="text-muted text-sm leading-relaxed">
                                   Your creator status is verified. You can now
                                   publish your digital works directly to the
                                   repository.
@@ -360,17 +354,17 @@ export default function ProfilePage() {
                           )
                         ) : (
                           <div className="max-w-md space-y-8">
-                            <div className="space-y-4">
-                              <div className="flex items-center gap-2 text-zinc-600 mb-2">
+                            <div className="space-y-4 mt-24">
+                              <div className="flex items-center gap-2 text-muted mb-2">
                                 <ShieldCheckIcon size={20} weight="light" />
-                                <span className="text-[10px] font-pixel uppercase tracking-widest">
+                                <span className="text-xs font-pixel uppercase tracking-widest">
                                   Restricted
                                 </span>
                               </div>
                               <h2 className="text-3xl font-medium tracking-tight text-black">
                                 Apply for Creator Status.
                               </h2>
-                              <p className="text-zinc-500 text-sm leading-relaxed">
+                              <p className="text-muted text-sm leading-relaxed">
                                 Join our verified artist community. Submit your
                                 portfolio for review by the council to begin
                                 publishing.
@@ -386,11 +380,11 @@ export default function ProfilePage() {
                           </div>
                         )
                       ) : (
-                        <div className="space-y-4">
+                        <div className="space-y-4 mt-24">
                           <h2 className="text-3xl font-medium tracking-tight text-black">
                             No artworks yet.
                           </h2>
-                          <p className="text-zinc-500 text-sm leading-relaxed max-w-sm">
+                          <p className="text-muted text-sm leading-relaxed max-w-sm">
                             This creator has not published any artworks yet.
                           </p>
                         </div>

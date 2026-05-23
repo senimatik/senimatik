@@ -2,18 +2,18 @@ import Link from "next/link";
 
 export default function ForbiddenPage() {
   return (
-    <main className="min-h-screen bg-black text-white flex flex-col items-center justify-center px-4">
+    <main className="min-h-screen bg-background-2 text-white flex flex-col items-center justify-center px-4">
       <div className="max-w-sm w-full space-y-8 text-center">
         <div className="space-y-1">
-          <p className="font-pixel text-xs uppercase text-zinc-500">
-            Seni<span className="opacity-40">matik</span>
+           <p className="font-pixel text-base uppercase text-white">
+            Seni<span className="text-primary">matik</span>
           </p>
-          <h1 className="text-8xl font-bold tracking-tighter text-zinc-700">403</h1>
+          <h1 className="text-9xl font-bold text-primary">403</h1>
         </div>
 
         <div className="space-y-2">
-          <h2 className="text-2xl font-medium tracking-tight">Forbidden</h2>
-          <p className="text-sm text-zinc-500 font-light">
+          <h2 className="text-2xl font-medium">Forbidden</h2>
+          <p className="text-sm text-muted font-light">
             You don&apos;t have permission to access this page.
           </p>
         </div>

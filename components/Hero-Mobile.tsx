@@ -1,6 +1,6 @@
 "use client";
 
-import { ArrowUpRightIcon } from "@phosphor-icons/react";
+import { ArrowRightIcon } from "@phosphor-icons/react";
 import { motion } from "framer-motion";
 import Image from "next/image";
 import Link from "next/link";
@@ -9,15 +9,15 @@ import { useState } from "react";
 const ARTWORKS = [
   {
     id: 1,
-    url: "https://images.unsplash.com/photo-1579783902614-a3fb3927b6a5?q=80&w=1000&auto=format&fit=crop",
-    title: "Ethereal Bloom",
-    creator: "Aiden Ward",
+    url: "https://cdn.senimatik.com/artworks/2KCcmn4pBR2ZB8MN6zhSk6uSRP1fwkHKAZuAo8zWVqtm/ff4b1132-84ae-4c91-b8d2-cb5551b665be/preview.webp",
+    title: "Memori Yang Sirna",
+    creator: "Deham.Rasmi",
   },
   {
     id: 2,
-    url: "https://images.unsplash.com/photo-1549490349-8643362247b5?q=80&w=1000&auto=format&fit=crop",
-    title: "Monochrome Study",
-    creator: "Elena Cross",
+    url: "https://cdn.senimatik.com/artworks/CcbwBjwXvqAjYSGfTUpp2YFPcgUsXGCVRpwwjUzbfVEo/258e8319-9977-43e4-9fab-b521df492d4c/preview.webp",
+    title: "Crossing Paths in Life",
+    creator: "0xmuden",
   },
   {
     id: 3,
@@ -57,7 +57,7 @@ const ARTWORKS = [
   },
 ];
 
-export default function Gallery() {
+export default function HeroMobile() {
   const [cards, setCards] = useState(ARTWORKS);
   const [resetKeys, setResetKeys] = useState<Record<number, number>>({});
 
@@ -76,7 +76,43 @@ export default function Gallery() {
   const topCard = cards[0];
 
   return (
-    <div className="relative w-full h-full flex flex-col md:flex-row items-center justify-center gap-8">
+    <div className="relative w-full h-full flex flex-col md:flex-row items-center justify-center gap-8 px-4">
+      <div className="mt-8 mb-8">
+        <motion.h1
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.8, ease: [0.16, 1, 0.3, 1] }}
+          className="text-4xl font-semibold text-white mb-4"
+        >
+          Protect art. <br /> Define rights. <br /> Build legacy.
+        </motion.h1>
+        <motion.p
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.8, delay: 0.1, ease: [0.16, 1, 0.3, 1] }}
+          className="text-muted text-sm mb-6 leading-relaxed"
+        >
+          The IP-first art marketplace for protecting provenance, empowering
+          artists, and building lasting legacy.
+        </motion.p>
+
+        <motion.button
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.8, delay: 0.2, ease: [0.16, 1, 0.3, 1] }}
+          className="group flex items-center gap-3 bg-white text-black px-4 py-2 font-medium text-sm font-pixel hover:bg-primary transition-colors cursor-pointer"
+          onClick={() => {
+            window.location.href = "/discover";
+          }}
+        >
+          DISCOVER
+          <ArrowRightIcon
+            className="text-primary group-hover:text-white w-4 h-4"
+            weight="bold"
+          />
+        </motion.button>
+      </div>
+
       <div className="relative w-full max-w-xs aspect-3/4">
         {cards.map((card, index) => (
           <motion.div
@@ -133,23 +169,23 @@ export default function Gallery() {
         initial={{ opacity: 0, x: 10 }}
         animate={{ opacity: 1, x: 0 }}
         transition={{ duration: 0.3 }}
-        className="flex flex-row md:flex-col items-center md:items-stretch gap-4 md:gap-1 min-w-35"
+        className="flex flex-row md:flex-col items-center md:items-stretch gap-4 md:gap-1 min-w-35 mb-8"
       >
         <div>
           <h3 className="text-white font-semibold text-lg leading-tight">
             {topCard.title}
           </h3>
-          <p className="text-white md:text-muted-foreground text-sm">
+          <p className="text-muted text-sm">
             {"// "}
             {topCard.creator}
           </p>
         </div>
-        <Link
+        {/* <Link
           href={`/art/${topCard.id}`}
           className="text-xs flex gap-2 items-center justify-start text-white/60 hover:text-white transition-colors underline underline-offset-4"
         >
           View artwork <ArrowUpRightIcon size={12} />
-        </Link>
+        </Link> */}
       </motion.div>
     </div>
   );

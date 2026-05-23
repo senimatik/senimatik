@@ -12,24 +12,20 @@ export interface LicenseOptionForm {
     resaleMinPrice?: number;   // only for personal_use/limited_print
 }
 
-interface MintFormValues {
-    // Step 1: Artwork
-    fullImageId?: string;
-    previewImageId?: string;
-    r2PreviewKey?: string;
-    imageType?: string;
-    imageFileName?: string;
-    imageFileSize?: number;
+// Pending image (blob stored locally, not yet uploaded)
+export interface PendingImage {
+    id: string;
+    blob: Blob;
+    fileName: string;
+    preview: string; // object URL for display
+}
 
-    // Step 1: Supplementary Images (up to 5, total 10MB)
-    supplementaryImages: Array<{
-        id: string;
-        file: string;
-        type: string;
-        size: number;
-        r2Key: string;
-        preview: string;
-    }>;
+export interface MintFormValues {
+    // Step 1: Artwork - pending upload (blob stored locally)
+    pendingPrimaryImage?: PendingImage;
+
+    // Step 1: Supplementary Images - pending upload (blobs stored locally)
+    pendingSupplementaryImages: PendingImage[];
 
     // Step 2: Details
     name: string;
@@ -88,7 +84,7 @@ export function MintFormProvider({ children }: { children: ReactNode }) {
             ],
             royaltyBasisPoints: 500, // 5%
             royaltyRecipients: [],
-            supplementaryImages: [],
+            pendingSupplementaryImages: [],
         },
     });
 
@@ -105,4 +101,88 @@ export function useFormContext() {
         throw new Error("useFormContext must be used within a MintFormProvider");
     }
     return context;
+}
+
+type PrintSizeForm = NonNullable<MintFormValues["printSizes"]>[number];
+
+export function hasLimitedPrintLicense(values: MintFormValues): boolean {
+    return values.licenseOptions?.some((opt) => opt.licenseType === "limited_print") ?? false;
+}
+
+function isValidPrintSize(size: PrintSizeForm): boolean {
+    return (
+        !!size.label?.trim() &&
+        size.widthCm > 0 &&
+        size.heightCm > 0 &&
+        size.priceAddon !== undefined &&
+        size.priceAddon >= 0
+    );
+}
+
+/** Step 4 validation: licenses, pricing, and print sizes when Limited Edition is selected. */
+export function getStep4LicenseError(values: MintFormValues): string | null {
+    if (!values.licenseOptions || values.licenseOptions.length === 0) {
+        return "Please select at least one license type in Step 4";
+    }
+
+    for (const opt of values.licenseOptions) {
+        if (opt.price === undefined || opt.price < 0) {
+            return `Please set a valid price for ${opt.licenseType.replace(/_/g, " ")} license`;
+        }
+        if (opt.licenseType === "limited_print" && (!opt.printLimit || opt.printLimit < 2)) {
+            return "Please set an edition limit of at least 2 for Limited Print license";
+        }
+    }
+
+    if (hasLimitedPrintLicense(values)) {
+        const validPrintSizes = (values.printSizes ?? []).filter(isValidPrintSize);
+        if (validPrintSizes.length === 0) {
+            return "Please add at least one print size in Step 4";
+        }
+    }
+
+    return null;
+}
+
+/** Returns a user-facing error message, or null when the form is ready to deploy. */
+export function getMintFormDeployError(values: MintFormValues): string | null {
+    if (!values.pendingPrimaryImage) {
+        return "Please upload an artwork image in Step 1";
+    }
+
+    if (!values.name?.trim()) return "Please enter an artwork name in Step 2";
+    if (!values.symbol?.trim()) return "Please enter a unit symbol in Step 2";
+    if (!values.description?.trim()) return "Please enter a description in Step 2";
+
+    const step4Error = getStep4LicenseError(values);
+    if (step4Error) return step4Error;
+
+    return null;
+}
+
+export function isMintFormReadyToDeploy(values: MintFormValues): boolean {
+    return getMintFormDeployError(values) === null;
+}
+
+/** Check if a specific step is valid/complete */
+export function isStepValid(stepId: number, values: MintFormValues): boolean {
+    switch (stepId) {
+        case 1:
+            return !!values.pendingPrimaryImage;
+        case 2:
+            return !!(values.name?.trim() && values.symbol?.trim() && values.description?.trim());
+        case 3:
+            // Collection is optional - always valid
+            return true;
+        case 4:
+            return getStep4LicenseError(values) === null;
+        case 5:
+            // Royalty has defaults - always valid
+            return true;
+        case 6:
+            // Review step - valid if all previous required steps valid
+            return isMintFormReadyToDeploy(values);
+        default:
+            return false;
+    }
 }

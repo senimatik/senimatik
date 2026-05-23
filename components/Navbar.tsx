@@ -1,27 +1,40 @@
 "use client";
 
-import { useState, useMemo, useEffect, useRef, useCallback } from "react";
+import { useState, useMemo, useEffect, useRef, useCallback, type ReactNode } from "react";
 import { useQuery, useMutation } from "convex/react";
-import { useQuery as useTanQuery } from "@tanstack/react-query";
+// import { useQuery as useTanQuery } from "@tanstack/react-query";
 import Link from "next/link";
+import Image from "next/image";
 import { useRouter } from "next/navigation";
-import { ListIcon, XIcon, CaretDownIcon, BellIcon, CheckCircleIcon, XCircleIcon, ClockIcon } from "@phosphor-icons/react";
+import {
+  ListIcon,
+  XIcon,
+  CaretDownIcon,
+  BellIcon,
+  CheckCircleIcon,
+  XCircleIcon,
+  ClockIcon,
+  ClipboardTextIcon,
+  PaintBrushIcon,
+} from "@phosphor-icons/react";
 import { motion, AnimatePresence } from "framer-motion";
 import { useWallet } from "@solana/wallet-adapter-react";
 import { useWalletModal } from "@solana/wallet-adapter-react-ui";
-import { Connection, PublicKey, LAMPORTS_PER_SOL } from "@solana/web3.js";
+// import { Connection, PublicKey, LAMPORTS_PER_SOL } from "@solana/web3.js";
 import { useCurrentUser } from "@/lib/context/UserContext";
 import { useWalletAddress } from "@/lib/hooks/useWalletAddress";
 import { api } from "@/convex/_generated/api";
 import { Id } from "@/convex/_generated/dataModel";
+import { resolveR2PublicUrl } from "@/lib/r2-public-url";
+import { AccentPillButton } from "@/components/ui/accent-pill-button";
 
-const solanaConnection = new Connection(process.env.NEXT_PUBLIC_SOLANA_RPC_URL!);
+// const solanaConnection = new Connection(process.env.NEXT_PUBLIC_SOLANA_RPC_URL!);
 
 interface NavbarProps {
   variant?: "light" | "dark";
 }
 
-const NOTIF_ICONS: Record<string, React.ReactNode> = {
+const NOTIF_ICONS: Record<string, ReactNode> = {
   application_approved: <CheckCircleIcon size={14} weight="fill" className="text-green-500" />,
   application_rejected: <XCircleIcon size={14} weight="fill" className="text-red-400" />,
   application_in_review: <ClockIcon size={14} weight="fill" className="text-blue-400" />,
@@ -47,7 +60,7 @@ export default function Navbar({ variant = "light" }: NavbarProps) {
   const router = useRouter();
 
   const textColor = variant === "light" ? "text-white" : "text-black";
-  const opacityColor = variant === "light" ? "opacity-40" : "opacity-40";
+  // const opacityColor = variant === "light" ? "opacity-40" : "opacity-40";
 
   const { connected, connecting, disconnect } = useWallet();
   const { setVisible: openWalletModal } = useWalletModal();
@@ -81,17 +94,17 @@ export default function Navbar({ variant = "light" }: NavbarProps) {
   }, [markAllAsRead, walletAddress]);
 
   // Validate as Solana base58 address (32-44 chars, no 0x prefix)
-  const isValidSolanaAddress = !!walletAddress && !walletAddress.startsWith("0x") && walletAddress.length >= 32;
+  // const isValidSolanaAddress = !!walletAddress && !walletAddress.startsWith("0x") && walletAddress.length >= 32;
 
-  const { data: balance = null } = useTanQuery({
-    queryKey: ["solana-balance", walletAddress],
-    queryFn: async () => {
-      const lamports = await solanaConnection.getBalance(new PublicKey(walletAddress));
-      return lamports / LAMPORTS_PER_SOL;
-    },
-    enabled: isValidSolanaAddress && connected,
-    retry: false,
-  });
+  // const { data: balance = null } = useTanQuery({
+  //   queryKey: ["solana-balance", walletAddress],
+  //   queryFn: async () => {
+  //     const lamports = await solanaConnection.getBalance(new PublicKey(walletAddress));
+  //     return lamports / LAMPORTS_PER_SOL;
+  //   },
+  //   enabled: isValidSolanaAddress && connected,
+  //   retry: false,
+  // });
 
   const handleClickOutside = useCallback((event: MouseEvent) => {
     if (dropdownRef.current && !dropdownRef.current.contains(event.target as Node)) {
@@ -107,23 +120,31 @@ export default function Navbar({ variant = "light" }: NavbarProps) {
     return () => document.removeEventListener("mousedown", handleClickOutside);
   }, [handleClickOutside]);
 
-  // Role-based nav links
-  const navLinks = useMemo(() => {
-    const links = [{ name: "Discover", href: "/discover" }];
+  /** Desktop center: Discover only (Apply is the accent pill). */
+  const desktopExploreLinks = useMemo(
+    () => [{ name: "Discover", href: "/discover" }, { name: "Artist", href: "/#" }],
+    [],
+  );
+
+  /** Mobile drawer: Discover + Apply when role is user. */
+  const primaryNavLinks = useMemo(() => {
+    const links = [...desktopExploreLinks];
+    if (connected && role === "user") {
+      links.push({ name: "Apply", href: "/apply" });
+    }
+    return links;
+  }, [connected, role, desktopExploreLinks]);
+
+  /** Wallet menu (desktop): Create → accent pill, not listed here. */
+  const dropdownNavLinks = useMemo(() => {
+    const links: { name: string; href: string }[] = [];
 
     if (connected && user?.walletAddress) {
-      links.push({ name: "Profile", href: `/profile/${user.walletAddress}` });
-      links.push({ name: "Purchases", href: "/purchase" });
-
-      if (role === "user") {
-        links.push({ name: "Apply", href: "/apply" });
-      }
-
       if (role === "creator" || role === "admin" || role === "super_admin") {
-        links.push({ name: "Create", href: "/create" });
         links.push({ name: "Studio", href: "/studio" });
       }
-
+      links.push({ name: "Purchases", href: "/purchase" });
+      links.push({ name: "Profile", href: `/profile/${user.walletAddress}` });
       if (role === "admin" || role === "super_admin") {
         links.push({ name: "Admin", href: "/admin" });
       }
@@ -132,34 +153,93 @@ export default function Navbar({ variant = "light" }: NavbarProps) {
     return links;
   }, [connected, role, user]);
 
+  /** Mobile drawer: includes Create for creators. */
+  const mobileAccountNavLinks = useMemo(() => {
+    const links: { name: string; href: string }[] = [];
+
+    if (connected && user?.walletAddress) {
+      if (role === "creator" || role === "admin" || role === "super_admin") {
+        links.push({ name: "Studio", href: "/studio" });
+        links.push({ name: "Create", href: "/create" });
+      }
+      links.push({ name: "Purchases", href: "/purchase" });
+      links.push({ name: "Profile", href: `/profile/${user.walletAddress}` });
+      if (role === "admin" || role === "super_admin") {
+        links.push({ name: "Admin", href: "/admin" });
+      }
+    }
+
+    return links;
+  }, [connected, role, user]);
+
+  const fullNavLinks = useMemo(
+    () => [...primaryNavLinks, ...mobileAccountNavLinks],
+    [primaryNavLinks, mobileAccountNavLinks],
+  );
+
+  const showApplyPill = connected && role === "user";
+  const showCreatePill =
+    connected &&
+    (role === "creator" || role === "admin" || role === "super_admin");
+
+  /** Mobile drawer: hide Apply/Create text links when shown as accent pills above. */
+  const mobileDrawerListLinks = useMemo(() => {
+    const omit = new Set<string>();
+    if (showApplyPill) omit.add("Apply");
+    if (showCreatePill) omit.add("Create");
+    return fullNavLinks.filter((l) => !omit.has(l.name));
+  }, [fullNavLinks, showApplyPill, showCreatePill]);
+
   const shortAddress = walletAddress
     ? `${walletAddress.slice(0, 4)}...${walletAddress.slice(-4)}`
     : "";
 
+  /** Same display rules as `app/profile/[id]/page.tsx` (own profile uses `user` from context). */
+  const menuWalletLabel = (() => {
+    const w = user?.walletAddress ?? walletAddress;
+    if (!w) return "";
+    return `${w.slice(0, 6)}...${w.slice(-4)}`;
+  })();
+  const menuDisplayName = user?.displayName ?? "Anonymous";
+  const menuEmail = user?.email?.trim();
+  const menuSubtitle = menuEmail ?? menuWalletLabel;
+
+  const resolvedAvatarUrl = resolveR2PublicUrl(user?.avatarUrl);
+
+  const menuInitial = (
+    user?.displayName?.[0] ??
+    user?.walletAddress?.[0] ??
+    walletAddress?.[0] ??
+    "?"
+  ).toUpperCase();
+  const menuSubtitleIsEmail = !!menuEmail;
+
   return (
     <nav
-      className={`z-50 flex items-center justify-between w-full pt-4 px-4 lg:px-12  ${textColor}`}
+      className={`z-50 flex w-full items-center py-4 px-4 lg:px-12 ${textColor}`}
     >
-      <Link href="/" className="group flex items-center gap-3">
-        <span className="font-pixel text-base font-black tracking-tighter uppercase">
-          Seni<span className={opacityColor}>matik</span>
-        </span>
-      </Link>
+      <div className="flex min-w-0 flex-1 items-center justify-start">
+        <Link href="/" className="group flex shrink-0 items-center gap-3">
+          <span className="font-pixel text-base font-black tracking-tighter uppercase">
+            Seni<span className="text-primary">matik</span>
+          </span>
+        </Link>
+      </div>
 
-      {/* Desktop Navigation */}
-      <div className="hidden lg:flex items-center gap-12">
-        {navLinks.map((link) => (
+      {/* Desktop Navigation — centered via equal flex-1 left/right columns */}
+      <div className="hidden lg:flex shrink-0 items-center justify-center gap-12 px-4">
+        {desktopExploreLinks.map((link) => (
           <Link
             key={link.name}
             href={link.href}
-            className="font-pixel text-[10px] tracking-[0.3em] uppercase opacity-60 hover:opacity-100 transition-opacity"
+            className="font-pixel text-xs tracking-widest uppercase whitespace-nowrap text-muted hover:text-primary transition-opacity"
           >
             {link.name}
           </Link>
         ))}
       </div>
 
-      <div className="flex items-center gap-4">
+      <div className="flex min-w-0 flex-1 items-center justify-end gap-4">
         {/* Notification Bell (all screens, only when connected) */}
         {connected && (
           <div className="relative" ref={notifRef}>
@@ -181,15 +261,15 @@ export default function Navbar({ variant = "light" }: NavbarProps) {
                   animate={{ opacity: 1, y: 0 }}
                   exit={{ opacity: 0, y: -6 }}
                   transition={{ duration: 0.15 }}
-                  className="absolute z-1 right-0 top-full mt-2 w-72 md:w-80 rounded-lg bg-white text-black shadow-xl border border-black/5 overflow-hidden"
+                  className="absolute z-1 right-0 top-full mt-2 w-72 md:w-80 bg-white text-black shadow-xl border border-black/5 overflow-hidden"
                 >
                   {/* Header */}
                   <div className="px-4 py-3 border-b border-black/5 flex items-center justify-between">
-                    <p className="text-[9px] uppercase tracking-[0.2em] opacity-40 font-pixel">Notifications</p>
+                    <p className="text-[9px] uppercase tracking-widest opacity-40 font-pixel">Notifications</p>
                     {unreadCount > 0 && (
                       <button
                         onClick={() => handleMarkAllRead()}
-                        className="text-[9px] uppercase tracking-widest font-pixel text-zinc-400 hover:text-black transition-colors"
+                        className="text-[9px] uppercase tracking-widest font-pixel text-muted hover:text-primary transition-colors cursor-pointer"
                       >
                         Mark all read
                       </button>
@@ -200,7 +280,7 @@ export default function Navbar({ variant = "light" }: NavbarProps) {
                   <div className="max-h-80 overflow-y-auto">
                     {(!notifications || notifications.length === 0) && (
                       <div className="px-4 py-8 text-center">
-                        <p className="font-pixel text-[9px] uppercase tracking-widest text-zinc-300">No notifications</p>
+                        <p className="font-pixel text-xs uppercase tracking-widest text-zinc-300">No notifications</p>
                       </div>
                     )}
                     {notifications?.map((n) => (
@@ -211,9 +291,9 @@ export default function Navbar({ variant = "light" }: NavbarProps) {
                       >
                         <span className="mt-0.5 shrink-0">{NOTIF_ICONS[n.type] ?? <BellIcon size={14} />}</span>
                         <div className="min-w-0">
-                          <p className={`text-xs leading-snug mb-0.5 ${!n.isRead ? "font-semibold" : "font-medium"}`}>{n.title}</p>
-                          <p className="text-[11px] text-zinc-500 leading-relaxed line-clamp-2">{n.message}</p>
-                          <p className="font-pixel text-[9px] uppercase tracking-widest text-zinc-300 mt-1">{timeAgo(n.createdAt)}</p>
+                          <p className={`text-sm leading-snug mb-0.5 ${!n.isRead ? "font-semibold" : "font-medium"}`}>{n.title}</p>
+                          <p className="text-xs text-muted leading-relaxed line-clamp-2">{n.message}</p>
+                          <p className="font-pixel text-[9px] uppercase tracking-widest text-primary mt-1">{timeAgo(n.createdAt)}</p>
                         </div>
                         {!n.isRead && (
                           <span className="w-1.5 h-1.5 rounded-full bg-blue-400 shrink-0 mt-1.5" />
@@ -227,12 +307,33 @@ export default function Navbar({ variant = "light" }: NavbarProps) {
           </div>
         )}
 
+        {connected && (showApplyPill || showCreatePill) && (
+          <div className="hidden lg:flex items-center gap-2 shrink-0 font-pixel tracking-widest">
+            {showApplyPill && (
+              <AccentPillButton
+                href="/apply"
+                icon={<ClipboardTextIcon size={14} weight="fill" className="text-white" aria-hidden />}
+              >
+                Apply
+              </AccentPillButton>
+            )}
+            {showCreatePill && (
+              <AccentPillButton
+                href="/create"
+                icon={<PaintBrushIcon size={14} weight="fill" className="text-white" aria-hidden />}
+              >
+                Create
+              </AccentPillButton>
+            )}
+          </div>
+        )}
+
         {/* Desktop Wallet */}
         {connected ? (
           <div className="relative hidden lg:block" ref={dropdownRef}>
             <button
               onClick={() => setIsDropdownOpen((prev) => !prev)}
-              className="flex items-center gap-2 font-pixel text-[10px] tracking-[0.2em] uppercase opacity-80 hover:opacity-100 transition-opacity border border-current/30 rounded px-3 py-1.5"
+              className="flex items-center gap-2 font-pixel text-xs tracking-widest uppercase opacity-80 hover:opacity-100 transition-opacity border border-current/30 px-3 py-[9.5px]"
             >
               {shortAddress}
               <CaretDownIcon size={10} />
@@ -245,29 +346,86 @@ export default function Navbar({ variant = "light" }: NavbarProps) {
                   animate={{ opacity: 1, y: 0 }}
                   exit={{ opacity: 0, y: -6 }}
                   transition={{ duration: 0.15 }}
-                  className="absolute z-1 right-0 top-full mt-2 w-56 rounded-lg bg-white text-black shadow-xl border border-black/5 overflow-hidden"
+                  className="absolute z-1 right-0 top-full mt-2 w-[min(100vw-2rem,17.5rem)] bg-white text-black shadow-lg overflow-hidden"
                 >
-                  {/* Balance */}
-                  <div className="px-4 py-3 border-b border-black/5">
-                    <p className="text-[9px] uppercase tracking-[0.2em] opacity-40 mb-1">Balance</p>
-                    <p className="font-mono text-sm font-bold">
-                      {balance !== null ? `${balance.toFixed(4)} SOL` : "—"}
-                    </p>
+                  <div className="flex gap-3 px-4 py-3 border-b border-zinc-100">
+                    <div className="relative h-10 w-10 shrink-0 overflow-hidden bg-primary/20 ring-1 ring-primary/80">
+                      {resolvedAvatarUrl ? (
+                        <Image
+                          src={resolvedAvatarUrl}
+                          alt={menuDisplayName}
+                          fill
+                          className="object-cover"
+                          sizes="40px"
+                        />
+                      ) : (
+                        <div className="flex h-full w-full items-center justify-center text-base font-semibold text-primary">
+                          {menuInitial}
+                        </div>
+                      )}
+                    </div>
+                    <div className="min-w-0 flex-1 pt-0.5">
+                      <p className="truncate text-sm font-semibold text-black leading-snug">
+                        {menuDisplayName}
+                      </p>
+                      {menuSubtitle ? (
+                        <p
+                          className={`mt-0.5 truncate text-xs text-muted leading-snug ${menuSubtitleIsEmail ? "" : "font-mono"}`}
+                        >
+                          {menuSubtitle}
+                        </p>
+                      ) : null}
+                    </div>
                   </div>
 
-                  {/* Actions */}
-                  <div className="p-2 flex flex-col gap-1">
+                  <div className="px-2 py-2">
+                    <nav className="flex flex-col gap-0.5">
+                      {dropdownNavLinks.length > 0 ? (
+                        dropdownNavLinks.map((link) => (
+                          <Link
+                            key={link.name}
+                            href={link.href}
+                            onClick={() => setIsDropdownOpen(false)}
+                            className="px-3 py-2 text-sm text-black transition-colors hover:bg-primary/10"
+                          >
+                            {link.name}
+                          </Link>
+                        ))
+                      ) : (
+                        <Link
+                          href={walletAddress ? `/profile/${walletAddress}` : "#"}
+                          onClick={(e) => {
+                            if (!walletAddress) e.preventDefault();
+                            setIsDropdownOpen(false);
+                          }}
+                          className="px-3 py-2 text-sm text-black transition-colors hover:bg-primary/10"
+                        >
+                          Profile
+                        </Link>
+                      )}
+                    </nav>
+                  </div>
+
+                  <div className="border-t border-zinc-100 px-2 py-2">
                     <button
-                      onClick={() => { router.push("/settings"); setIsDropdownOpen(false); }}
-                      className="w-full text-left px-3 py-2 text-sm rounded hover:bg-zinc-50 transition-colors"
+                      type="button"
+                      onClick={() => {
+                        router.push("/settings");
+                        setIsDropdownOpen(false);
+                      }}
+                      className="w-full px-3 py-2 text-left text-sm text-black transition-colors hover:bg-primary/10 cursor-pointer"
                     >
                       Settings
                     </button>
                     <button
-                      onClick={() => { disconnect(); setIsDropdownOpen(false); }}
-                      className="w-full text-left px-3 py-2 text-sm rounded text-red-500 hover:bg-red-50 transition-colors"
+                      type="button"
+                      onClick={() => {
+                        disconnect();
+                        setIsDropdownOpen(false);
+                      }}
+                      className="w-full px-3 py-2 text-left text-sm font-medium text-red-600 transition-colors hover:bg-red-50 cursor-pointer"
                     >
-                      Disconnect
+                      Disconnect wallet
                     </button>
                   </div>
                 </motion.div>
@@ -278,7 +436,7 @@ export default function Navbar({ variant = "light" }: NavbarProps) {
           <button
             onClick={() => openWalletModal(true)}
             disabled={connecting}
-            className="hidden lg:block font-pixel text-[10px] tracking-[0.2em] uppercase opacity-80 hover:opacity-100 transition-opacity border border-current/30 rounded px-3 py-1.5 disabled:opacity-30"
+            className="hidden lg:block font-pixel text-xs tracking-widest uppercase opacity-80 hover:opacity-100 transition-opacity border border-current/30 px-3 py-[9.5px] disabled:opacity-30"
           >
             {connecting ? "Connecting..." : "Connect"}
           </button>
@@ -303,9 +461,9 @@ export default function Navbar({ variant = "light" }: NavbarProps) {
             transition={{ type: "spring", damping: 25, stiffness: 200 }}
             className={`fixed inset-0 z-60 flex flex-col px-4 py-6 lg:hidden bg-white text-black`}
           >
-            <div className="flex justify-between items-center mb-16">
+            <div className="flex justify-between items-center mb-10">
               <span className="font-pixel text-base font-black tracking-tighter uppercase">
-                Seni<span className={opacityColor}>matik</span>
+                Seni<span className="text-primary">matik</span>
               </span>
               <div className="flex items-center gap-4">
                 {/* Mobile notification indicator */}
@@ -325,31 +483,55 @@ export default function Navbar({ variant = "light" }: NavbarProps) {
               </div>
             </div>
 
-            <div className="flex flex-col gap-8">
-              {navLinks.map((link) => (
+            <div className="flex flex-col gap-6">
+              {mobileDrawerListLinks.map((link) => (
                 <Link
                   key={link.name}
                   href={link.href}
                   onClick={() => setIsMenuOpen(false)}
-                  className="text-4xl font-bold tracking-tighter uppercase hover:opacity-60 transition-opacity"
+                  className="text-2xl font-bold tracking-tighter uppercase hover:opacity-60 transition-opacity"
                 >
                   {link.name}
                 </Link>
               ))}
             </div>
 
-            <div className="mt-auto pt-10 border-t border-black/5 flex flex-col gap-6">
+            <div className="mt-auto pt-8 border-t border-black/5 flex flex-col gap-4">
+            {connected && (showApplyPill || showCreatePill) && (
+              <div className="flex w-full shrink-0 flex-col">
+                {showApplyPill && (
+                  <AccentPillButton
+                    href="/apply"
+                    onClick={() => setIsMenuOpen(false)}
+                    className="flex w-full justify-center"
+                    icon={<ClipboardTextIcon size={14} weight="fill" className="text-white" aria-hidden />}
+                  >
+                    Apply
+                  </AccentPillButton>
+                )}
+                {showCreatePill && (
+                  <AccentPillButton
+                    href="/create"
+                    onClick={() => setIsMenuOpen(false)}
+                    className="flex w-full justify-center"
+                    icon={<PaintBrushIcon size={14} weight="fill" className="text-white" aria-hidden />}
+                  >
+                    Create
+                  </AccentPillButton>
+                )}
+              </div>
+            )}
               {connected ? (
                 <>
-                  <div className="space-y-1">
-                    <p className="text-[9px] uppercase tracking-[0.2em] opacity-40">Balance</p>
+                  {/* <div className="space-y-1">
+                    <p className="text-[9px] uppercase tracking-widest opacity-40">Balance</p>
                     <p className="font-mono text-sm font-bold">
                       {balance !== null ? `${balance.toFixed(4)} SOL` : "—"}
                     </p>
-                  </div>
+                  </div> */}
                   <button
                     onClick={() => { disconnect(); setIsMenuOpen(false); }}
-                    className="w-full rounded-lg border border-red-300 px-5 py-2 font-medium text-red-600 hover:bg-red-50"
+                    className="w-full border border-red-300 px-5 py-2 font-medium text-red-600 hover:bg-red-50"
                   >
                     Disconnect
                   </button>
@@ -358,14 +540,11 @@ export default function Navbar({ variant = "light" }: NavbarProps) {
                 <button
                   onClick={() => { openWalletModal(true); setIsMenuOpen(false); }}
                   disabled={connecting}
-                  className="w-full rounded-lg bg-zinc-900 px-5 py-2 font-medium text-white hover:bg-zinc-800 disabled:opacity-50"
+                  className="w-full bg-black px-5 py-2 font-medium text-white hover:bg-zinc-800 disabled:opacity-50"
                 >
                   {connecting ? "Connecting..." : "Connect Wallet"}
                 </button>
               )}
-              <p className="text-[9px] uppercase tracking-[0.3em] text-center opacity-30">
-                Verifiable Rights v0.2.1
-              </p>
             </div>
           </motion.div>
         )}

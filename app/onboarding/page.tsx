@@ -56,7 +56,7 @@ function ProfileSetupForm({ displayName, avatarUrl, onSaved }: ProfileFormProps)
           {...register("displayName", {
             maxLength: { value: 50, message: "Max 50 characters" },
           })}
-          className="w-full bg-transparent placeholder:text-zinc-400 border-b border-black/10 py-4 focus:border-black focus:outline-none transition-colors text-xl font-bold uppercase tracking-tighter"
+          className="w-full bg-transparent placeholder:text-zinc-400 border-b border-black/10 py-4 focus:border-black focus:outline-none transition-colors text-xl font-bold uppercase"
         />
         {errors.displayName && (
           <p className="mt-2 text-xs text-red-500">{errors.displayName.message}</p>
@@ -71,7 +71,7 @@ function ProfileSetupForm({ displayName, avatarUrl, onSaved }: ProfileFormProps)
           type="url"
           placeholder="HTTPS://EXAMPLE.COM/AVATAR.PNG"
           {...register("avatarUrl")}
-          className="w-full bg-transparent placeholder:text-zinc-400 border-b border-black/10 py-4 focus:border-black focus:outline-none transition-colors text-xl font-bold uppercase tracking-tighter"
+          className="w-full bg-transparent placeholder:text-zinc-400 border-b border-black/10 py-4 focus:border-black focus:outline-none transition-colors text-xl font-bold uppercase"
         />
       </div>
 
@@ -109,9 +109,9 @@ export default function OnboardingPage() {
         <div className="mb-16">
           <div className="inline-flex items-center gap-3 mb-8 px-4 py-2 border border-black/10 rounded-full">
             <SealCheckIcon size={16} weight="fill" className="text-black" />
-            <span className="font-pixel text-[9px] uppercase tracking-[0.2em]">Creator Access Granted</span>
+            <span className="font-pixel text-[9px] uppercase tracking-widest">Creator Access Granted</span>
           </div>
-          <h1 className="text-4xl md:text-6xl font-bold tracking-tighter uppercase mb-6">
+          <h1 className="text-4xl md:text-6xl font-bold uppercase mb-6">
             Welcome,<br />Creator.
           </h1>
           <p className="text-zinc-500 text-lg leading-relaxed max-w-xl">
@@ -180,7 +180,7 @@ export default function OnboardingPage() {
                   <p className="font-medium text-lg tracking-tight">{card.title}</p>
                   <p className="text-sm text-zinc-500 leading-relaxed">{card.description}</p>
                 </div>
-                <div className="flex items-center gap-2 font-pixel text-[10px] uppercase tracking-[0.2em] text-zinc-400 group-hover:text-black transition-colors mt-auto">
+                <div className="flex items-center gap-2 font-pixel text-[10px] uppercase tracking-widest text-zinc-400 group-hover:text-black transition-colors mt-auto">
                   {card.cta}
                   <ArrowRightIcon size={12} weight="bold" />
                 </div>

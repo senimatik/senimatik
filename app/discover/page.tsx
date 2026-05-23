@@ -2,29 +2,27 @@
 
 import { useState, useMemo, useCallback } from "react";
 
-const R2_PUBLIC_URL = process.env.NEXT_PUBLIC_R2_PUBLIC_URL!;
 import { useQuery } from "convex/react";
 import { api } from "@/convex/_generated/api";
 import Navbar from "@/components/Navbar";
 import Image from "next/image";
-import { MagnifyingGlassIcon } from "@phosphor-icons/react";
+import { MagnifyingGlassIcon, XIcon } from "@phosphor-icons/react";
 import { motion, AnimatePresence } from "framer-motion";
 import Link from "next/link";
-import Footer from "@/components/Footer";
 import { Button } from "@/components/ui/button";
 
+const R2_PUBLIC_URL = process.env.NEXT_PUBLIC_R2_PUBLIC_URL!;
+
 function DiscoverContent() {
-    const [cols, setCols] = useState(3);
     const [search, setSearch] = useState("");
     const [sortBy, setSortBy] = useState("recent");
     const [licenseType, setLicenseType] = useState("all");
+    const [isSearchExpanded, setIsSearchExpanded] = useState(false);
 
     // Stable callbacks to avoid recreating on every render
     const handleSearch = useCallback((value: string) => setSearch(value), []);
     const handleLicenseChange = useCallback((value: string) => setLicenseType(value), []);
     const handleSortChange = useCallback((value: string) => setSortBy(value), []);
-    const handleColsDecrease = useCallback(() => setCols((prev) => Math.max(3, prev - 1)), []);
-    const handleColsIncrease = useCallback(() => setCols((prev) => Math.min(5, prev + 1)), []);
     const handleResetFilters = useCallback(() => {
         setSearch("");
         setLicenseType("all");
@@ -54,9 +52,9 @@ function DiscoverContent() {
             const licenseLabel = licenseTypes.length > 1
                 ? "Multiple"
                 : licenseTypes[0] === "personal_use" ? "Personal"
-                : licenseTypes[0] === "commercial_digital" ? "Commercial"
-                : licenseTypes[0] === "limited_print" ? "Limited Print"
-                : "License";
+                    : licenseTypes[0] === "commercial_digital" ? "Commercial"
+                        : licenseTypes[0] === "limited_print" ? "Limited Print"
+                            : "License";
 
             return {
                 _id: artwork._id,
@@ -90,145 +88,139 @@ function DiscoverContent() {
     }, [displayData, search, licenseType, sortBy]);
 
     return (
-        <main className="min-h-screen bg-gradient-custom text-white font-sans selection:bg-white selection:text-black flex flex-col">
-            <Navbar />
+        <main className="min-h-screen bg-white text-black flex flex-col relative">
+            <Navbar variant="dark"/>
 
-            <header className="mt-10 lg:mt-20 mb-16 flex flex-col gap-12 max-w-7xl mx-auto w-full px-4">
-                <div className="flex flex-col lg:flex-row justify-between items-start lg:items-end gap-10 lg:gap-0">
-                    <div className="flex flex-col gap-3">
-                        <h1 className="font-pixel text-4xl md:text-6xl uppercase tracking-tighter leading-none">
-                            Explore<span className="opacity-20">Works</span>
-                        </h1>
-                        <p className="font-pixel text-sm opacity-30 uppercase tracking-[0.4em]">Verified Assets</p>
-                    </div>
-
-                    <div className="flex items-center gap-6 w-full md:w-auto">
-                        {/* Search */}
-                        <div className="relative flex-1 md:w-80 group">
-                            <MagnifyingGlassIcon className="absolute left-0 top-1/2 -translate-y-1/2 opacity-20 group-focus-within:opacity-100 transition-opacity" size={16} />
-                            <input
-                                type="text"
-                                placeholder="Search collections..."
-                                className="w-full placeholder:text-white bg-transparent border-b border-white/10 pl-8 py-3 outline-none text-[10px] font-pixel placeholder:opacity-100 uppercase tracking-[0.2em] focus:border-white/40 transition-all"
-                                value={search}
-                                onChange={(e) => handleSearch(e.target.value)}
-                            />
-                        </div>
-                    </div>
-                </div>
-                
-                {/* Filters & Controls */}
-                <div className="flex flex-wrap justify-between items-center gap-6 py-4 border-y border-white/5">
-                    <div className="flex items-center gap-8">
-                        {/* Sort by License */}
-                        <div className="flex flex-col gap-1">
-                            <span className="text-[10px] font-pixel opacity-40 uppercase tracking-[0.2em]">License Type</span>
-                            <select
-                                className="bg-transparent font-pixel text-xs uppercase outline-none cursor-pointer hover:text-accent transition-colors"
-                                value={licenseType}
-                                onChange={(e) => handleLicenseChange(e.target.value)}
-                            >
-                                <option value="all" className="bg-black text-white">All Licenses</option>
-                                <option value="personal_use" className="bg-black text-white">Personal</option>
-                                <option value="commercial_digital" className="bg-black text-white">Commercial</option>
-                                <option value="limited_print" className="bg-black text-white">Limited Print</option>
-                            </select>
-                        </div>
-
-                        {/* Sort by Price */}
-                        <div className="flex flex-col gap-1">
-                            <span className="text-[10px] font-pixel opacity-40 uppercase tracking-[0.2em]">Sort By</span>
-                            <select
-                                className="bg-transparent font-pixel text-xs uppercase outline-none cursor-pointer hover:text-accent transition-colors"
-                                value={sortBy}
-                                onChange={(e) => handleSortChange(e.target.value)}
-                            >
-                                <option value="recent" className="bg-black text-white">Recent</option>
-                                <option value="price_low" className="bg-black text-white">Price: Low to High</option>
-                                <option value="price_high" className="bg-black text-white">Price: High to Low</option>
-                            </select>
-                        </div>
-                    </div>
-
-                    <div className="flex items-center gap-6">
-                        <div className="flex items-center gap-3">
-                            <span className="text-[10px] font-pixel opacity-40 uppercase tracking-[0.2em]">Grid Scale</span>
-                            <div className="flex items-center gap-2">
-                                <button
-                                    onClick={handleColsDecrease}
-                                    className="w-8 h-8 flex items-center justify-center border border-white/10 hover:bg-white/10 transition-colors"
-                                >-</button>
-                                <span className="font-pixel text-xs min-w-4 text-center">{cols}</span>
-                                <button
-                                    onClick={handleColsIncrease}
-                                    className="w-8 h-8 flex items-center justify-center border border-white/10 hover:bg-white/10 transition-colors"
-                                >+</button>
-                            </div>
-                        </div>
-                    </div>
+            <header className="px-4 lg:px-12 mt-12 mb-2 w-full mx-auto">
+                <div className="flex flex-col gap-2">
+                    <h1 className="text-4xl font-bold mb-1">
+                        Discover
+                    </h1>
+                    <p className="text-base text-muted">Discover unique digital art pieces with flexible licensing options</p>
                 </div>
             </header>
 
-            {/* Grid Container */}
+            {/* Masonry Grid */}
             <div className="flex-1 overflow-y-auto no-scrollbar py-8">
-                <div className="max-w-7xl mx-auto">
-                    <div
-                        className="grid grid-cols-1 md:grid-cols-[repeat(var(--grid-cols),minmax(0,1fr))] gap-x-12 gap-y-20 px-4"
-                        style={{
-                            "--grid-cols": cols
-                        } as React.CSSProperties}
-                    >
-                        <AnimatePresence mode="popLayout">
-                            {filteredData.map((item, idx) => (
+                {filteredData.length > 0 ? (
+                    <div className="w-full mx-auto px-4 lg:px-12 columns-1 sm:columns-2 md:columns-3 lg:columns-4 xl:columns-5 gap-6">
+                        <AnimatePresence mode="sync">
+                            {filteredData.map((item) => (
                                 <motion.div
-                                    layout
+                                    layoutId={item._id}
+                                    initial={{ opacity: 0, scale: 0.96 }}
+                                    animate={{ opacity: 1, scale: 1 }}
+                                    exit={{ opacity: 0, scale: 0.96 }}
+                                    transition={{
+                                        opacity: { duration: 0.2, ease: "easeOut" },
+                                        scale: { duration: 0.2, ease: [0.25, 0.46, 0.45, 0.94] },
+                                        layout: { duration: 0.3, ease: [0.25, 0.46, 0.45, 0.94] }
+                                    }}
                                     key={item._id}
-                                    exit={{ opacity: 0, scale: 0.95 }}
-                                    transition={{ duration: 0.6, ease: [0.16, 1, 0.3, 1] }}
-                                    className="flex flex-col group animate-in fade-in slide-in-from-bottom-4 duration-600"
-                                    style={{ animationDelay: `${idx * 0.05}s`, animationFillMode: "both" }}
+                                    className="break-inside-avoid mb-6 group"
                                 >
-                                    <Link href={`/art/${item._id}`} className="flex flex-col">
-                                        <div className="relative aspect-3/4 overflow-hidden bg-white/5 mb-4 border border-white">
-                                            <Image
-                                                src={item.image}
-                                                alt={item.title}
-                                                fill
-                                                sizes="(max-width: 768px) 100vw, (max-width: 1280px) 33vw, 25vw"
-                                                className="object-cover transition-transform duration-1000 group-hover:scale-105"
-                                            />
-                                            <div className="absolute top-4 right-4 px-2 bg-black/40 backdrop-blur-md border border-white/10 opacity-0 group-hover:opacity-100 transition-opacity">
-                                                <span className="font-pixel text-sm  uppercase">{item.license}</span>
-                                            </div>
+                                    <Link href={`/art/${item._id}`} className="block">
+                                    <div className="relative overflow-hidden shrink-0">
+                                        <Image
+                                            src={item.image}
+                                            alt={item.title}
+                                            width={400}
+                                            height={600}
+                                            sizes="(max-width: 640px) 100vw, (max-width: 768px) 50vw, (max-width: 1024px) 33vw, 20vw"
+                                            className="w-full h-auto"
+                                        />
+                                        <div className="absolute top-3 right-3 px-2 py-1 bg-primary flex items-center group-hover:opacity-100 opacity-0 transition-opacity">
+                                            <span className="font-pixel text-white text-[10px] uppercase leading-none">{item.license}</span>
                                         </div>
+                                    </div>
 
-                                        <div className="flex flex-col gap-2">
-                                            <div className="flex justify-between items-start">
-                                                <h3 className="font-pixel text-xs md:text-lg uppercase tracking-tight line-clamp-1">{item.title}</h3>
-                                                <span className="font-pixel text-white text-xs md:text-lg">{item.price}</span>
-                                            </div>
-                                            <p className="font-sans text-sm opacity-30 uppercase tracking-[0.2em]">{"// "} {item.artist}</p>
+                                    <div className="flex flex-col gap-1 mt-3">
+                                        <div className="flex justify-between items-start gap-2">
+                                            <h3 className="text-sm line-clamp-1 flex-1">{item.title}</h3>
+                                            <span className="text-primary font-bold text-sm shrink-0">{item.price}</span>
                                         </div>
+                                        <p className="text-xs text-muted">{"// "}{item.artist}</p>
+                                    </div>
                                     </Link>
                                 </motion.div>
                             ))}
                         </AnimatePresence>
                     </div>
-                </div>
+                ) : (
+                    <div className="h-48 flex flex-col items-center justify-center gap-4 border border-dashed mx-4 lg:mx-12">
+                        <p className="font-pixel text-base text-muted uppercase tracking-widest">No results found</p>
+                        <Button
+                            variant="outline"
+                            onClick={handleResetFilters}
+                            className="text-black"
+                        >Reset Filters</Button>
+                    </div>
+                )}
             </div>
 
-            {filteredData.length === 0 && (
-                <div className="h-64 min-w-full lg:min-w-7xl mx-auto flex flex-col items-center justify-center gap-4 border border-dashed border-white/10">
-                    <p className="font-pixel text-xs opacity-40 uppercase tracking-widest">No results found</p>
-                    <Button
-                        variant="outline"
-                        onClick={handleResetFilters}
-                        className="text-black"
-                    >Reset Filters</Button>
-                </div>
-            )}
+            {/* Bottom Navigation */}
+            <motion.div
+                layout
+                className={`fixed bottom-4 left-0 right-0 mx-auto flex items-center bg-background-2 backdrop-blur-lg border border-white/10 px-4 py-1  z-10 lg:z-50 shadow-2xl ${isSearchExpanded ? 'w-[calc(100%-2rem)] max-w-md' : 'w-fit'}`}
+                transition={{ layout: { duration: 0.25, ease: [0.23, 1, 0.32, 1] } }}
+            >
+                {isSearchExpanded ? (
+                    <div className="flex items-center gap-2 w-full">
+                        <MagnifyingGlassIcon size={16} className="text-white shrink-0" />
+                        <input
+                            type="text"
+                            placeholder="SEARCH..."
+                            autoFocus
+                            className="flex-1 bg-transparent outline-none text-[10px] text-white font-pixel uppercase min-w-0"
+                            value={search}
+                            onChange={(e) => handleSearch(e.target.value)}
+                        />
+                        <button
+                            onClick={() => {
+                                setIsSearchExpanded(false);
+                                setSearch("");
+                            }}
+                            className="w-8 h-8 flex items-center justify-center text-white/60 hover:text-white"
+                        >
+                            <XIcon size={16}/>
+                        </button>
+                    </div>
+                ) : (
+                    <div className="flex items-center gap-2 md:gap-4">
+                        <button
+                            onClick={() => setIsSearchExpanded(true)}
+                            className="w-8 h-8 flex items-center justify-center hover:text-white/70"
+                        >
+                            <MagnifyingGlassIcon size={16} className="text-white" />
+                        </button>
 
-            <Footer variant="dark" />
+                        <div className="w-px h-6 bg-white/10" />
+
+                        <select
+                            className="bg-transparent font-pixel text-[10px]  outline-none cursor-pointer hover:text-white/70 appearance-none text-center text-white"
+                            value={licenseType}
+                            onChange={(e) => handleLicenseChange(e.target.value)}
+                        >
+                            <option value="all" className="bg-black text-white">All Licenses</option>
+                            <option value="personal_use" className="bg-black text-white">Personal</option>
+                            <option value="commercial_digital" className="bg-black text-white">Commercial</option>
+                            <option value="limited_print" className="bg-black text-white">Limited Print</option>
+                        </select>
+
+                        <div className="w-px h-6 bg-white/10" />
+
+                        <select
+                            className="bg-transparent font-pixel text-[10px] outline-none cursor-pointer hover:text-white/70 appearance-none text-center text-white"
+                            value={sortBy}
+                            onChange={(e) => handleSortChange(e.target.value)}
+                        >
+                            <option value="recent" className="bg-black text-white">Recent</option>
+                            <option value="price_low" className="bg-black text-white">Price: Low</option>
+                            <option value="price_high" className="bg-black text-white">Price: High</option>
+                        </select>
+                    </div>
+                )}
+            </motion.div>
         </main>
     );
 }

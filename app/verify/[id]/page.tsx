@@ -51,7 +51,7 @@ export default function VerifyPage() {
         {/* Loading */}
         {license === undefined && (
           <div className="py-40 flex items-center justify-center">
-            <p className="font-pixel text-[10px] uppercase tracking-[0.3em] opacity-30">
+            <p className="font-pixel text-base uppercase tracking-widest text-muted">
               Verifying...
             </p>
           </div>
@@ -62,7 +62,7 @@ export default function VerifyPage() {
           <div className="py-40 flex flex-col items-center gap-4 text-center">
             <XCircleIcon size={40} weight="fill" className="text-red-400" />
             <p className="text-xl font-bold tracking-tight">License not found</p>
-            <p className="text-sm text-zinc-500">
+            <p className="text-base text-muted">
               The verification ID{" "}
               <span className="font-mono">{verificationId}</span> does not match
               any license in our system.
@@ -87,10 +87,10 @@ export default function VerifyPage() {
                 <XCircleIcon size={24} weight="fill" className="text-red-400" />
               )}
               <div>
-                <p className="font-bold text-sm">
+                <p className="font-bold text-lg">
                   {license.isActive ? "Valid License" : "Revoked License"}
                 </p>
-                <p className="text-xs text-zinc-400">
+                <p className="text-base text-muted">
                   {license.isActive
                     ? "This license is active and legally binding."
                     : "This license has been revoked."}
@@ -99,7 +99,7 @@ export default function VerifyPage() {
             </div>
 
             {/* Certificate card */}
-            <div className="border border-black/10 rounded-2xl overflow-hidden">
+            <div className="border border-black/10 overflow-hidden">
               {/* Artwork preview */}
               {license.artworkPreviewKey && (
                 <div className="relative w-full aspect-video bg-zinc-100">
@@ -113,11 +113,11 @@ export default function VerifyPage() {
                 </div>
               )}
 
-              <div className="p-8 flex flex-col gap-6">
+              <div className="px-4 md:px-8 py-8 flex flex-col gap-6">
                 {/* Title + seal */}
                 <div className="flex items-start justify-between gap-4">
                   <div>
-                    <p className="font-pixel text-[9px] uppercase tracking-[0.3em] text-zinc-400 mb-1">
+                    <p className="font-pixel text-xs uppercase tracking-widest text-muted mb-1">
                       Licensed Artwork
                     </p>
                     <h1 className="text-2xl font-bold tracking-tight">
@@ -132,15 +132,14 @@ export default function VerifyPage() {
                 </div>
 
                 {/* Details grid */}
-                <div className="grid grid-cols-2 gap-4">
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                   <CertField label="License Type" value={LicenseLabel(license.licenseType)} />
                   <CertField label="Delivery" value={DeliveryLabel(license.deliveryType)} />
                   <CertField label="Issued" value={formatDate(license.issuedAt)} />
                   <CertField label="Status">
                     <span
-                      className={`font-medium text-sm ${
-                        license.isActive ? "text-green-600" : "text-red-500"
-                      }`}
+                      className={`font-medium text-base ${license.isActive ? "text-green-600" : "text-red-500"
+                        }`}
                     >
                       {license.isActive ? "Active" : "Revoked"}
                     </span>
@@ -155,16 +154,16 @@ export default function VerifyPage() {
                 </div>
 
                 {/* Verification ID */}
-                <div className="bg-zinc-50 border border-black/5 rounded-xl p-4">
-                  <p className="font-pixel text-[9px] uppercase tracking-[0.3em] text-zinc-400 mb-2">
+                <div className="bg-zinc-50 border border-black/5 p-4">
+                  <p className="font-pixel text-xs uppercase tracking-widest text-muted mb-2">
                     Verification ID
                   </p>
-                  <p className="font-mono text-sm font-bold break-all">{license.verificationId}</p>
+                  <p className="font-mono text-base font-bold break-all">{license.verificationId}</p>
                 </div>
 
-                <p className="text-[10px] text-zinc-400 text-center">
+                <p className="text-xs text-muted text-center">
                   This certificate is publicly verifiable at{" "}
-                  <span className="font-mono">senimatik.io/verify/{license.verificationId}</span>
+                  <span className="font-mono">senimatik.com/verify/{license.verificationId}</span>
                 </p>
               </div>
             </div>
@@ -172,7 +171,7 @@ export default function VerifyPage() {
             <div className="flex gap-3 justify-center">
               <Link
                 href="/discover"
-                className="text-sm font-medium underline underline-offset-4 opacity-60 hover:opacity-100"
+                className="text-sm font-medium underline underline-offset-4 opacity-60 hover:text-primary"
               >
                 Browse artworks
               </Link>
@@ -199,11 +198,11 @@ function CertField({
 }) {
   return (
     <div>
-      <p className="font-pixel text-[9px] uppercase tracking-[0.3em] text-zinc-400 mb-1">
+      <p className="font-pixel text-xs uppercase tracking-widest text-muted mb-1">
         {label}
       </p>
       {children ?? (
-        <p className={`text-sm font-medium ${mono ? "font-mono" : ""}`}>{value}</p>
+        <p className={`text-base font-medium ${mono ? "font-mono" : ""}`}>{value}</p>
       )}
     </div>
   );

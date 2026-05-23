@@ -228,7 +228,7 @@ export const review = mutation({
         decision === "approved"
           ? "Congratulations! You are now a verified creator. Set up your profile to get started."
           : `Your application was not approved at this time.${reviewNote ? ` Reviewer note: ${reviewNote}` : " You may reapply."}`,
-      linkTo: decision === "approved" ? "/onboarding" : "/apply",
+      linkTo: decision === "approved" ? "/settings" : "/apply",
       isRead: false,
       createdAt: Date.now(),
     });

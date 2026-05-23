@@ -13,7 +13,7 @@ import Footer from "@/components/Footer";
 import {
   ShoppingBagIcon,
   CertificateIcon,
-  CopyIcon,
+  // CopyIcon,
   ArrowSquareOutIcon,
   CheckCircleIcon,
   XCircleIcon,
@@ -41,10 +41,22 @@ const ORDER_STATUS_CONFIG: Record<OrderStatus, { label: string; color: string; i
   delivered: { label: "Delivered", color: "text-green-600 bg-green-50", icon: <CheckCircleIcon size={10} weight="fill" /> },
 };
 
+const LICENSE_TYPE_CONFIG: Record<string, string> = {
+  personal_use: "bg-blue-100 text-blue-900",
+  commercial_digital: "bg-emerald-100 text-emerald-900",
+  limited_print: "bg-orange-100 text-orange-900",
+};
+
+const DELIVERY_TYPE_CONFIG: Record<string, string> = {
+  digital: "bg-purple-100 text-purple-900",
+  physical: "bg-cyan-100 text-cyan-900",
+  both: "bg-pink-100 text-pink-900",
+};
+
 function OrderStatusBadge({ status }: { status: OrderStatus }) {
   const cfg = ORDER_STATUS_CONFIG[status];
   return (
-    <span className={`inline-flex items-center gap-1 text-[9px] font-pixel uppercase tracking-widest px-2 py-0.5 rounded ${cfg.color}`}>
+    <span className={`inline-flex items-center gap-1 text-xs px-2 py-0.5 ${cfg.color}`}>
       {cfg.icon} {cfg.label}
     </span>
   );
@@ -52,8 +64,8 @@ function OrderStatusBadge({ status }: { status: OrderStatus }) {
 
 function StatCard({ label, value }: { label: string; value: string | number }) {
   return (
-    <div className="border border-black/5 rounded-xl p-6">
-      <p className="font-pixel text-[9px] uppercase tracking-[0.3em] text-zinc-400 mb-2">{label}</p>
+    <div className="border border-black/5 p-6">
+      <p className="font-pixel text-base uppercase tracking-widest text-muted mb-2">{label}</p>
       <p className="text-2xl font-bold tracking-tight">{value}</p>
     </div>
   );
@@ -64,7 +76,7 @@ export default function PurchasePage() {
   const { connected: isConnected } = useWallet();
   const walletAddress = useWalletAddress();
   const [activeTab, setActiveTab] = useState<"purchases" | "certificates">("purchases");
-  const [copiedId, setCopiedId] = useState<string | null>(null);
+  // const [copiedId, setCopiedId] = useState<string | null>(null);
 
   const skip = !isConnected || !walletAddress;
 
@@ -81,18 +93,18 @@ export default function PurchasePage() {
     skip ? "skip" : { walletAddress }
   );
 
-  function copyToClipboard(text: string) {
-    navigator.clipboard.writeText(text);
-    setCopiedId(text);
-    setTimeout(() => setCopiedId(null), 2000);
-  }
+  // function copyToClipboard(text: string) {
+  //   navigator.clipboard.writeText(text);
+  //   setCopiedId(text);
+  //   setTimeout(() => setCopiedId(null), 2000);
+  // }
 
   if (!isConnected) {
     return (
       <main className="min-h-screen bg-white text-black font-sans">
         <Navbar variant="dark" />
         <div className="max-w-7xl mx-auto px-4 py-40 flex flex-col items-center gap-4">
-          <p className="font-pixel text-[10px] uppercase tracking-[0.3em] opacity-40">
+          <p className="font-pixel text-base uppercase tracking-widest text-muted">
             Connect wallet to view your purchases
           </p>
         </div>
@@ -105,11 +117,11 @@ export default function PurchasePage() {
     <main className="min-h-screen bg-white text-black font-sans selection:bg-black selection:text-white">
       <Navbar variant="dark" />
 
-      <div className="max-w-7xl mx-auto px-4 xl:px-0 py-16">
+      <div className="mx-auto px-4 lg:px-12 pt-12 pb-16">
         {/* Header */}
         <div className="mb-10">
-          <h1 className="text-4xl font-bold tracking-tighter mb-1">My Purchases</h1>
-          <p className="text-sm text-zinc-500">Your purchases and licenses</p>
+          <h1 className="text-4xl font-bold mb-1">My Purchases</h1>
+          <p className="text-base text-muted">Your purchases and licenses</p>
         </div>
 
         {/* Stats */}
@@ -128,9 +140,8 @@ export default function PurchasePage() {
             <button
               key={tab}
               onClick={() => setActiveTab(tab)}
-              className={`pb-4 font-pixel text-[10px] uppercase tracking-[0.3em] transition-opacity ${
-                activeTab === tab ? "opacity-100 border-b-2 border-black" : "opacity-30 hover:opacity-60"
-              }`}
+              className={`pb-4 font-pixel text-sm uppercase tracking-widest transition-opacity cursor-pointer ${activeTab === tab ? "opacity-100 border-b-2 border-primary text-primary" : "opacity-30 hover:opacity-60"
+                }`}
             >
               {tab}
             </button>
@@ -144,25 +155,25 @@ export default function PurchasePage() {
               <p className="text-sm text-zinc-400">Loading...</p>
             )}
             {purchases && purchases.length === 0 && (
-              <div className="py-20 flex flex-col items-center gap-4 border border-dashed border-black/10 rounded-xl">
+              <div className="py-20 flex flex-col items-center gap-4 border border-dashed border-black/10">
                 <ShoppingBagIcon size={32} className="opacity-20" />
-                <p className="font-pixel text-[10px] uppercase tracking-[0.3em] opacity-30">
+                <p className="font-pixel text-base uppercase tracking-widest opacity-30">
                   No purchases yet
                 </p>
                 <button
                   onClick={() => router.push("/discover")}
-                  className="text-sm font-medium underline underline-offset-4 opacity-60 hover:opacity-100"
+                  className="text-sm font-medium underline underline-offset-4 opacity-60 hover:text-primary cursor-pointer"
                 >
                   Discover artworks
                 </button>
               </div>
             )}
             {purchases && purchases.length > 0 && (
-              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 2xl:grid-cols-4 gap-4">
                 {purchases.map((p) => (
                   <div
                     key={p._id}
-                    className="border border-black/5 rounded-xl overflow-hidden [content-visibility:auto]"
+                    className="border border-black/5 overflow-hidden [content-visibility:auto]"
                   >
                     <Link href={`/art/${p.artworkId}`}>
                       <div className="relative w-full aspect-square bg-zinc-50">
@@ -177,21 +188,21 @@ export default function PurchasePage() {
                         )}
                       </div>
                     </Link>
-                    <div className="p-4 flex flex-col gap-2">
+                    <div className="p-4 flex flex-col">
                       <div className="flex items-start justify-between gap-2">
-                        <p className="font-bold text-sm tracking-tight leading-tight">
+                        <p className="font-bold text-lg tracking-tight leading-tight">
                           {p.artworkName}
                         </p>
-                        <span className="shrink-0 text-[9px] font-pixel uppercase tracking-widest bg-zinc-100 px-2 py-1 rounded">
+                        <span className={`shrink-0 text-xs font-pixel uppercase tracking-widest px-2 py-1 ${LICENSE_TYPE_CONFIG[p.licenseType] || "bg-zinc-100"}`}>
                           {p.licenseType.replace(/_/g, " ")}
                         </span>
                       </div>
-                      <div className="flex items-center gap-2 flex-wrap">
-                        <span className="text-[9px] font-pixel uppercase tracking-widest text-zinc-400 bg-zinc-50 px-2 py-0.5 rounded">
+                      <div className="flex items-center gap-2 flex-wrap mt-4">
+                        <span className={`text-xs capitalize px-2 py-0.5 ${DELIVERY_TYPE_CONFIG[p.deliveryType] || "bg-zinc-100"}`}>
                           {p.deliveryType}
                         </span>
                         {p.printEditionNumber && (
-                          <span className="text-[9px] font-pixel uppercase tracking-widest text-zinc-600 bg-amber-50 px-2 py-0.5 rounded">
+                          <span className="text-xs capitalize text-black bg-amber-50 px-2 py-0.5">
                             Edition {p.printEditionNumber}
                           </span>
                         )}
@@ -200,26 +211,27 @@ export default function PurchasePage() {
                         )}
                       </div>
                       {p.orderStatus === "shipped" && p.courierName && p.trackingNumber && (
-                        <div className="bg-purple-50 border border-purple-100 rounded-lg px-3 py-2 text-xs">
-                          <p className="font-pixel text-[9px] uppercase tracking-widest text-purple-400 mb-1">Tracking</p>
-                          <p className="font-medium text-purple-700">{p.courierName}</p>
-                          <p className="text-purple-600 font-mono">{p.trackingNumber}</p>
+                        <div className="bg-purple-50 border border-purple-100 px-3 py-2 text-xs mt-4">
+                          <p className="font-pixel text-xs uppercase tracking-widest text-purple-400 mb-2">Tracking</p>
+                          <p className="font-medium text-purple-700 text-sm">{p.courierName}</p>
+                          <p className="text-purple-600 font-medium text-sm">{p.trackingNumber}</p>
                         </div>
                       )}
                       {p.orderStatus === "delivered" && p.courierName && p.trackingNumber && (
-                        <div className="bg-green-50 border border-green-100 rounded-lg px-3 py-2 text-xs">
-                          <p className="font-pixel text-[9px] uppercase tracking-widest text-green-400 mb-1">Delivered via</p>
-                          <p className="font-medium text-green-700">{p.courierName} · {p.trackingNumber}</p>
+                        <div className="bg-green-50 border border-green-100 px-3 py-2 text-xs mt-4">
+                          <p className="font-pixel text-xs uppercase tracking-widest text-green-400 mb-2">Delivered via</p>
+                          <p className="font-medium text-green-700 text-sm">{p.courierName}</p>
+                          <p className="font-medium text-green-600 text-sm">{p.trackingNumber}</p>
                         </div>
                       )}
-                      <div className="flex items-center justify-between text-xs text-zinc-400 mt-1">
+                      <div className="flex items-center justify-between text-base text-muted mt-4">
                         <span>{formatDate(p.createdAt)}</span>
                         <span className="font-medium text-black">{p.totalPrice} USD</span>
                       </div>
                       {p.verificationId && (
                         <Link
                           href={`/verify/${p.verificationId}`}
-                          className="mt-1 flex items-center gap-1 text-[10px] font-pixel uppercase tracking-widest text-zinc-400 hover:text-black transition-colors"
+                          className="mt-4 flex items-center gap-1 text-xs font-pixel uppercase tracking-widest text-primary hover:opacity-60 transition-colors"
                         >
                           View Certificate <ArrowSquareOutIcon size={10} />
                         </Link>
@@ -237,9 +249,9 @@ export default function PurchasePage() {
           <>
             {!licenses && <p className="text-sm text-zinc-400">Loading...</p>}
             {licenses && licenses.length === 0 && (
-              <div className="py-20 flex flex-col items-center gap-4 border border-dashed border-black/10 rounded-xl">
+              <div className="py-20 flex flex-col items-center gap-4 border border-dashed border-black/10">
                 <CertificateIcon size={32} className="opacity-20" />
-                <p className="font-pixel text-[10px] uppercase tracking-[0.3em] opacity-30">
+                <p className="font-pixel text-base uppercase tracking-widest opacity-30">
                   No licenses yet
                 </p>
               </div>
@@ -249,9 +261,9 @@ export default function PurchasePage() {
                 {licenses.map((l) => (
                   <div
                     key={l._id}
-                    className="border border-black/5 rounded-xl p-5 flex gap-4 items-start [content-visibility:auto]"
+                    className="border border-black/5 p-5 flex gap-4 items-start [content-visibility:auto]"
                   >
-                    <div className="relative w-14 h-14 bg-zinc-100 rounded-lg overflow-hidden shrink-0">
+                    <div className="relative w-26 h-26 bg-zinc-100 overflow-hidden shrink-0">
                       {l.artworkPreviewKey && (
                         <Image
                           src={`${R2_URL}/${l.artworkPreviewKey}`}
@@ -264,36 +276,45 @@ export default function PurchasePage() {
                     </div>
                     <div className="flex-1 min-w-0">
                       <div className="flex items-start justify-between gap-2">
-                        <p className="font-bold text-sm tracking-tight">{l.artworkName}</p>
+                        <p className="font-bold text-base tracking-tight">{l.artworkName}</p>
                         {l.isActive ? (
-                          <span className="flex items-center gap-1 text-[9px] font-pixel uppercase tracking-widest text-green-600 shrink-0">
+                          <span className="flex items-center gap-1 text-sm font-pixel uppercase tracking-widest text-green-600 shrink-0">
                             <CheckCircleIcon size={10} weight="fill" /> Active
                           </span>
                         ) : (
-                          <span className="flex items-center gap-1 text-[9px] font-pixel uppercase tracking-widest text-red-500 shrink-0">
+                          <span className="flex items-center gap-1 text-sm font-pixel uppercase tracking-widest text-red-500 shrink-0">
                             <XCircleIcon size={10} weight="fill" /> Revoked
                           </span>
                         )}
                       </div>
-                      <p className="text-xs text-zinc-500 capitalize mt-0.5">
-                        {l.licenseType.replace(/_/g, " ")} · {l.deliveryType}
-                        {l.printEditionNumber && ` · Edition ${l.printEditionNumber}`}
-                      </p>
-                      <p className="text-xs text-zinc-400 mt-1">Issued {formatDate(l.issuedAt)}</p>
+                      <div className="flex items-center gap-2 flex-wrap text-xs mt-2">
+                        <span className={`px-2 py-0.5 capitalize ${LICENSE_TYPE_CONFIG[l.licenseType] || "bg-zinc-100"}`}>
+                          {l.licenseType.replace(/_/g, " ")}
+                        </span>
+                        <span className={`px-2 py-0.5 capitalize ${DELIVERY_TYPE_CONFIG[l.deliveryType] || "bg-zinc-100"}`}>
+                          {l.deliveryType}
+                        </span>
+                        {l.printEditionNumber && (
+                          <span className="text-black bg-amber-50 px-2 py-0.5">
+                            Edition {l.printEditionNumber}
+                          </span>
+                        )}
+                      </div>
+                      <p className="text-xs text-muted mt-2">Issued {formatDate(l.issuedAt)}</p>
 
                       <div className="flex items-center gap-3 mt-3">
-                        <button
+                        {/* <button
                           onClick={() => copyToClipboard(l.verificationId)}
                           className="flex items-center gap-1 text-[9px] font-pixel uppercase tracking-widest text-zinc-400 hover:text-black transition-colors"
                         >
                           <CopyIcon size={10} />
                           {copiedId === l.verificationId ? "Copied!" : "Copy ID"}
-                        </button>
+                        </button> */}
                         <Link
                           href={`/verify/${l.verificationId}`}
-                          className="flex items-center gap-1 text-[9px] font-pixel uppercase tracking-widest text-zinc-400 hover:text-black transition-colors"
+                          className="flex items-center gap-1 text-xs font-pixel uppercase tracking-widest text-primary hover:opacity-60 transition-colors"
                         >
-                          <ArrowSquareOutIcon size={10} /> Verify
+                          <ArrowSquareOutIcon size={10} /> View Certificate
                         </Link>
                       </div>
                     </div>

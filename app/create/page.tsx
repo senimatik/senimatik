@@ -5,7 +5,12 @@ import { useRouter } from "next/navigation";
 import { useMutation } from "convex/react";
 import { api } from "@/convex/_generated/api";
 import { toast } from "sonner";
-import { MintFormProvider, useFormContext } from "./MintFormProvider";
+import {
+  MintFormProvider,
+  useFormContext,
+  getMintFormDeployError,
+  isStepValid,
+} from "./MintFormProvider";
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
 import { useWalletAddress } from "@/lib/hooks/useWalletAddress";
@@ -41,13 +46,18 @@ function CreateFormContent() {
   const { form } = useFormContext();
   const walletAddress = useWalletAddress();
   const [currentStep, setCurrentStep] = useState(1);
+  const [highestStepReached, setHighestStepReached] = useState(1);
   const [submitting, setSubmitting] = useState(false);
   const createArtwork = useMutation(api.artworks.createArtwork);
+  const generateUploadUrl = useMutation(api.r2.generateArtworkUploadUrl);
 
-  const nextStep = useCallback(
-    () => setCurrentStep((prev) => Math.min(prev + 1, STEPS.length)),
-    []
-  );
+  const nextStep = useCallback(() => {
+    setCurrentStep((prev) => {
+      const next = Math.min(prev + 1, STEPS.length);
+      setHighestStepReached((h) => Math.max(h, next));
+      return next;
+    });
+  }, []);
   const prevStep = useCallback(
     () => setCurrentStep((prev) => Math.max(prev - 1, 1)),
     []
@@ -56,37 +66,7 @@ function CreateFormContent() {
   const ActiveStepComponent = STEPS[currentStep - 1].component;
   const isLastStep = currentStep === STEPS.length;
 
-  const getDeployError = () => {
-    if (submitting) return null;
-    const values = form.getValues();
-
-    // Check Step 1: Artwork
-    if (!values.r2PreviewKey) {
-      return "Please upload an artwork image in Step 1";
-    }
-
-    // Check Step 2: Details
-    if (!values.name?.trim()) return "Please enter an artwork name in Step 2";
-    if (!values.symbol?.trim()) return "Please enter a unit symbol in Step 2";
-    if (!values.description?.trim()) return "Please enter a description in Step 2";
-
-    // Check Step 4: License (multi-license)
-    if (!values.licenseOptions || values.licenseOptions.length === 0) {
-      return "Please select at least one license type in Step 4";
-    }
-    for (const opt of values.licenseOptions) {
-      if (opt.price === undefined || opt.price < 0) {
-        return `Please set a valid price for ${opt.licenseType.replace(/_/g, " ")} license`;
-      }
-      if (opt.licenseType === "limited_print" && (!opt.printLimit || opt.printLimit < 2)) {
-        return "Please set an edition limit of at least 2 for Limited Print license";
-      }
-    }
-
-    return null;
-  };
-
-  const deployError = getDeployError();
+  const deployError = submitting ? null : getMintFormDeployError(form.getValues());
   const canDeploy = !deployError && !submitting;
 
   const handleDeploy = useCallback(async () => {
@@ -100,29 +80,88 @@ function CreateFormContent() {
 
       const values = form.getValues();
 
-      // Validate required image uploads
-      if (!values.r2PreviewKey) {
+      // Validate required image
+      if (!values.pendingPrimaryImage) {
         toast.error("Image upload required", {
           description: "Please upload an image in Step 1 before deploying.",
         });
+        setSubmitting(false);
         return;
       }
 
-      // Check if any physical license is selected (for shipping/print data)
+      // Helper to convert filename to .webp extension
+      const toWebpFileName = (name: string) =>
+        name.replace(/\.[^.]+$/, ".webp");
+
+      // 1. Upload primary image to R2
+      toast.info("Uploading primary image...");
+      const primaryUploadRes = await generateUploadUrl({
+        walletAddress,
+        type: "preview",
+        fileName: toWebpFileName(values.pendingPrimaryImage.fileName),
+      });
+
+      const primaryUploadResp = await fetch(primaryUploadRes.url, {
+        method: "PUT",
+        body: values.pendingPrimaryImage.blob,
+        headers: { "Content-Type": "image/webp" },
+      });
+
+      if (!primaryUploadResp.ok) {
+        throw new Error(`Primary image upload failed: ${primaryUploadResp.statusText}`);
+      }
+
+      const r2PreviewKey = primaryUploadRes.key;
+
+      // 2. Upload supplementary images to R2
+      const supplementaryImages: Array<{
+        file: string;
+        type: string;
+        size: number;
+        r2Key: string;
+      }> = [];
+
+      if (values.pendingSupplementaryImages?.length > 0) {
+        toast.info("Uploading supplementary images...");
+
+        for (const img of values.pendingSupplementaryImages) {
+          const uploadRes = await generateUploadUrl({
+            walletAddress,
+            type: "details",
+            fileName: toWebpFileName(img.fileName),
+          });
+
+          const uploadResp = await fetch(uploadRes.url, {
+            method: "PUT",
+            body: img.blob,
+            headers: { "Content-Type": "image/webp" },
+          });
+
+          if (!uploadResp.ok) {
+            throw new Error(`Supplementary image upload failed: ${uploadResp.statusText}`);
+          }
+
+          supplementaryImages.push({
+            file: img.fileName,
+            type: "image/webp",
+            size: img.blob.size,
+            r2Key: uploadRes.key,
+          });
+        }
+      }
+
+      // 3. Check if any physical license is selected (for shipping/print data)
       const hasPhysicalLicense = values.licenseOptions?.some(
         opt => opt.licenseType !== "commercial_digital"
       ) ?? false;
 
+      // 4. Create artwork in Convex
+      toast.info("Creating artwork...");
       await createArtwork({
         walletAddress,
         // Step 1: Artwork
-        r2PreviewKey: values.r2PreviewKey,
-        supplementaryImages: values.supplementaryImages?.map(img => ({
-          file: img.file,
-          type: img.type,
-          size: img.size,
-          r2Key: img.r2Key,
-        })),
+        r2PreviewKey,
+        supplementaryImages: supplementaryImages.length > 0 ? supplementaryImages : undefined,
         // Step 2: Details
         name: values.name,
         symbol: values.symbol,
@@ -153,11 +192,7 @@ function CreateFormContent() {
         description: `${values.name} is now live on the marketplace.`,
       });
 
-      if (walletAddress) {
-        router.push(`/profile/${walletAddress}`);
-      } else {
-        router.push("/");
-      }
+      router.push(`/profile/${walletAddress}`);
     } catch (err) {
       toast.error("Deployment failed", {
         description: err instanceof Error ? err.message : "Please try again.",
@@ -166,21 +201,21 @@ function CreateFormContent() {
     } finally {
       setSubmitting(false);
     }
-  }, [form, walletAddress, router, createArtwork]);
+  }, [form, walletAddress, router, createArtwork, generateUploadUrl]);
 
   return (
     <main className="min-h-screen flex flex-col bg-white">
       <Navbar variant="dark" />
 
       <div className="flex-1 max-w-7xl mx-auto w-full mt-10 lg:mt-20 px-4 lg:px-12 xl:px-0">
-        <div className="grid grid-cols-1 lg:grid-cols-[280px_1fr] gap-16 lg:gap-32">
+        <div className="grid grid-cols-1 lg:grid-cols-[320px_1fr] gap-16 lg:gap-20">
           {/* Stepper Sidebar */}
           <aside className="hidden lg:flex flex-col gap-12 shrink-0">
             <div className="space-y-3">
-              <h1 className="text-3xl font-medium tracking-tight text-black">
+              <h1 className="text-3xl font-bold tracking-tight text-black">
                 Create Your Artwork
               </h1>
-              <p className="text-zinc-500 text-base font-light leading-relaxed">
+              <p className="text-muted text-base font-light leading-relaxed">
                 Upload your art and set up all the details. Complete each step to create your listing.
               </p>
             </div>
@@ -189,22 +224,30 @@ function CreateFormContent() {
               {STEPS.map((step) => {
                 const Icon = step.icon;
                 const isActive = currentStep === step.id;
-                const isCompleted = currentStep > step.id;
+                const isVisited = step.id <= highestStepReached;
+                const stepValid = isStepValid(step.id, form.getValues());
+
+                const canNavigate = isVisited;
 
                 return (
-                  <div
+                  <button
                     key={step.id}
-                    className={`flex items-center gap-5 py-3 relative transition-all ${
-                      isActive ? "text-black" : "text-zinc-300"
-                    }`}
+                    type="button"
+                    onClick={() => canNavigate && setCurrentStep(step.id)}
+                    disabled={!canNavigate}
+                    className={`flex items-center gap-5 py-3 relative transition-all w-full text-left ${
+                      isActive ? "text-primary" : "text-muted"
+                    } ${canNavigate ? "cursor-pointer hover:text-primary/80" : "cursor-not-allowed opacity-60"}`}
                   >
                     <div
                       className={`w-9 h-9 border flex items-center justify-center transition-all duration-500 ${
                         isActive
-                          ? "border-black bg-black text-white shadow-lg shadow-black/10"
-                          : isCompleted
-                            ? "border-black/5 bg-zinc-50 text-black/40"
-                            : "border-black/5"
+                          ? "border-primary bg-primary text-white shadow-lg shadow-primary/10"
+                          : isVisited && stepValid
+                            ? "border-green-500 bg-green-500/10 text-green-500"
+                            : isVisited && !stepValid
+                              ? "border-red-500 bg-red-500/5 text-red-500"
+                              : "border-black/10 text-muted"
                       }`}
                     >
                       <Icon size={18} weight={isActive ? "bold" : "light"} />
@@ -219,10 +262,10 @@ function CreateFormContent() {
                     {isActive && (
                       <motion.div
                         layoutId="stepIndicator"
-                        className="absolute -left-8 w-1 h-9 bg-black rounded-full"
+                        className="absolute -left-8 w-1 h-9 bg-primary rounded-full"
                       />
                     )}
-                  </div>
+                  </button>
                 );
               })}
             </nav>
@@ -233,12 +276,12 @@ function CreateFormContent() {
             {/* Mobile Header */}
             <div className="lg:hidden mb-16 space-y-4">
               <div className="flex items-center gap-3">
-                <span className="w-8 h-px bg-black/10" />
-                <span className="text-[10px] font-pixel text-zinc-400 uppercase tracking-widest">
+                <span className="w-8 h-px bg-primary" />
+                <span className="text-sm font-pixel text-primary uppercase tracking-widest">
                   Phase {currentStep} / {STEPS.length}
                 </span>
               </div>
-              <h2 className="text-5xl font-medium tracking-tight uppercase leading-none">
+              <h2 className="text-3xl font-bold tracking-tight text-primary uppercase leading-none mt-10">
                 {STEPS[currentStep - 1].title}
               </h2>
             </div>
@@ -258,7 +301,7 @@ function CreateFormContent() {
                   </div>
 
                   {/* Navigation Controls */}
-                  <div className="mt-24 pt-12 border-t border-black/3 flex justify-between items-center">
+                  <div className="mt-24 pt-12 border-t border-black/3 flex justify-between items-center mb-20">
                     <Button
                       variant="outline"
                       size="main"
@@ -287,11 +330,6 @@ function CreateFormContent() {
                           : "Proceed"}
                         {!isLastStep && <ArrowRightIcon size={14} />}
                       </Button>
-                      {isLastStep && deployError && (
-                        <p className="text-xs text-red-500 uppercase tracking-wide font-pixel">
-                          {deployError}
-                        </p>
-                      )}
                     </div>
                   </div>
                 </motion.div>

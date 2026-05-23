@@ -26,14 +26,14 @@ function InputField({
 }) {
   return (
     <div className="flex flex-col gap-1.5">
-      <label className="font-pixel text-[9px] uppercase tracking-[0.3em] text-zinc-400">{label}</label>
+      <label className="font-pixel text-base uppercase tracking-widest text-black">{label}</label>
       <input
         type={type}
         value={value}
         onChange={(e) => onChange(e.target.value)}
         placeholder={placeholder}
         maxLength={maxLength}
-        className="border border-black/10 px-4 py-2.5 text-sm outline-none focus:border-black transition-colors placeholder:text-zinc-300"
+        className="border border-black/10 px-4 py-2.5 text-base outline-none focus:border-black transition-colors placeholder:text-zinc-300"
       />
     </div>
   );
@@ -112,14 +112,14 @@ export default function SettingsPage() {
         avatarUrl: form.avatarUrl,
         shippingAddress: hasShippingAddress
           ? {
-              fullName: form.fullName,
-              street: form.street,
-              city: form.city,
-              state: form.state,
-              zipCode: form.zipCode,
-              country: form.country,
-              phone: form.phone,
-            }
+            fullName: form.fullName,
+            street: form.street,
+            city: form.city,
+            state: form.state,
+            zipCode: form.zipCode,
+            country: form.country,
+            phone: form.phone,
+          }
           : undefined,
       });
       toast.success("Settings saved");
@@ -135,7 +135,7 @@ export default function SettingsPage() {
       <main className="min-h-screen bg-white text-black font-sans">
         <Navbar variant="dark" />
         <div className="max-w-7xl mx-auto px-4 py-40 flex flex-col items-center gap-4">
-          <p className="font-pixel text-[10px] uppercase tracking-[0.3em] opacity-40">
+          <p className="font-pixel text-base uppercase tracking-widest text-muted">
             Connect wallet to manage settings
           </p>
         </div>
@@ -148,10 +148,10 @@ export default function SettingsPage() {
     <main className="min-h-screen bg-white text-black font-sans selection:bg-black selection:text-white">
       <Navbar variant="dark" />
 
-      <div className="max-w-2xl mx-auto px-4 py-16">
+      <div className="max-w-2xl mx-auto px-4 pt-12 pb-16">
         <div className="mb-10">
-          <h1 className="text-4xl font-bold tracking-tighter mb-1">Settings</h1>
-          <p className="text-sm text-zinc-500">Manage your profile and shipping details</p>
+          <h1 className="text-4xl font-bold mb-1">Settings</h1>
+          <p className="text-base text-muted">Manage your profile and shipping details</p>
         </div>
 
         {!me ? (
@@ -164,12 +164,12 @@ export default function SettingsPage() {
           <div className="flex flex-col gap-10">
             {/* Profile */}
             <section>
-              <h2 className="text-base font-bold tracking-tight mb-6">Profile</h2>
+              <h2 className="text-base font-pixel tracking-widest mb-6">Profile</h2>
               <div className="flex flex-col gap-6">
                 <div className="flex flex-col gap-1.5">
-                  <label className="font-pixel text-[9px] uppercase tracking-[0.3em] text-zinc-400">
+                  {/* <label className="font-pixel text-[9px] uppercase tracking-widest text-zinc-400">
                     Avatar
-                  </label>
+                  </label> */}
                   <AvatarUpload
                     currentAvatar={form.avatarUrl}
                     onUploadComplete={(key) =>
@@ -188,16 +188,16 @@ export default function SettingsPage() {
                   maxLength={50}
                 />
                 <div className="flex flex-col gap-1.5">
-                  <label className="font-pixel text-[9px] uppercase tracking-[0.3em] text-zinc-400">Bio</label>
+                  <label className="font-pixel text-base uppercase tracking-widest text-black">Bio</label>
                   <textarea
                     value={form.bio}
                     onChange={(e) => setForm((prev) => ({ ...prev, bio: e.target.value }))}
                     placeholder="Tell buyers about yourself..."
-                    maxLength={500}
+                    maxLength={160}
                     rows={3}
-                    className="border border-black/10 px-4 py-2.5 text-sm outline-none focus:border-black transition-colors placeholder:text-zinc-300 resize-none"
+                    className="border border-black/10 px-4 py-2.5 text-base outline-none focus:border-black transition-colors placeholder:text-zinc-300 resize-none"
                   />
-                  <p className="text-[10px] text-zinc-300 text-right">{form.bio.length}/500</p>
+                  <p className="text-xs text-muted text-right">{form.bio.length}/160</p>
                 </div>
                 <InputField
                   label="Social URL"
@@ -212,8 +212,8 @@ export default function SettingsPage() {
             {/* Shipping Address */}
             <section>
               <div className="mb-6">
-                <h2 className="text-base font-bold tracking-tight">Default Shipping Address</h2>
-                <p className="text-xs text-zinc-400 mt-1">Pre-filled automatically when purchasing physical artworks</p>
+                <h2 className="text-lg font-bold tracking-tight">Default Shipping Address</h2>
+                <p className="text-sm text-muted">Pre-filled automatically when purchasing physical artworks</p>
               </div>
               <div className="flex flex-col gap-4">
                 <InputField
@@ -272,7 +272,7 @@ export default function SettingsPage() {
               <button
                 onClick={handleSave}
                 disabled={saving}
-                className="w-full bg-black text-white font-medium py-3 hover:bg-zinc-800 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+                className="w-full bg-primary text-white font-pixel py-2 hover:bg-primary/80 transition-colors disabled:opacity-50 disabled:cursor-not-allowed cursor-pointer"
               >
                 {saving ? "Saving..." : "Save Changes"}
               </button>

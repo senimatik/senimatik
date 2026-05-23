@@ -109,7 +109,7 @@ export default function AdminOverview() {
 
                 {/* System Efficiency */}
                 <section className="p-8 border border-zinc-100 rounded-[40px] bg-zinc-50/10 space-y-8">
-                    <h2 className="text-[10px] font-pixel uppercase tracking-[0.3em] text-zinc-400">Node Performance</h2>
+                    <h2 className="text-[10px] font-pixel uppercase tracking-widest text-zinc-400">Node Performance</h2>
 
                     <div className="space-y-12">
                         {[

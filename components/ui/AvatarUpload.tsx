@@ -157,7 +157,7 @@ export function AvatarUpload({
             <button
               type="button"
               onClick={handleConfirm}
-              className="flex items-center gap-1.5 px-3 py-1.5 bg-black text-white text-xs font-medium hover:bg-zinc-800 transition-colors"
+              className="flex items-center gap-1.5 px-3 py-1.5 bg-black text-white text-base font-medium hover:bg-zinc-800 transition-colors"
             >
               <CheckIcon size={14} weight="bold" />
               Confirm
@@ -165,7 +165,7 @@ export function AvatarUpload({
             <button
               type="button"
               onClick={handleCancel}
-              className="flex items-center gap-1.5 px-3 py-1.5 border border-black/10 text-xs font-medium hover:bg-zinc-50 transition-colors"
+              className="flex items-center gap-1.5 px-3 py-1.5 border border-black/10 text-base font-medium hover:bg-zinc-50 transition-colors"
             >
               <XIcon size={14} />
               Cancel
@@ -177,7 +177,7 @@ export function AvatarUpload({
           <button
             type="button"
             onClick={handleDelete}
-            className="flex items-center gap-1.5 px-3 py-1.5 text-xs text-zinc-500 hover:text-red-500 transition-colors"
+            className="flex items-center gap-1.5 px-3 py-1.5 text-base text-muted hover:text-red-500 transition-colors cursor-pointer"
           >
             <TrashIcon size={14} />
             Remove

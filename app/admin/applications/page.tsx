@@ -89,11 +89,10 @@ export default function AdminApplications() {
                             <button
                                 key={tab.value}
                                 onClick={() => { setStatusFilter(tab.value); setSearch(""); }}
-                                className={`px-4 py-2 rounded-xl font-pixel text-[10px] uppercase tracking-widest transition-colors ${
-                                    statusFilter === tab.value
-                                        ? "bg-black text-white"
-                                        : "bg-zinc-50 text-zinc-400 hover:bg-zinc-100"
-                                }`}
+                                className={`px-4 py-2 rounded-xl font-pixel text-[10px] uppercase tracking-widest transition-colors ${statusFilter === tab.value
+                                    ? "bg-black text-white"
+                                    : "bg-zinc-50 text-zinc-400 hover:bg-zinc-100"
+                                    }`}
                             >
                                 {tab.label}
                             </button>
@@ -115,7 +114,7 @@ export default function AdminApplications() {
                 {/* Queue */}
                 <div className="lg:col-span-3 space-y-6">
                     <div className="flex items-center justify-between px-4">
-                        <h2 className="text-sm font-pixel uppercase tracking-[0.3em] text-zinc-400">verification queue_</h2>
+                        <h2 className="text-sm font-pixel uppercase tracking-widest text-zinc-400">verification queue_</h2>
                         <div className="h-px flex-1 mx-8 bg-zinc-100" />
                         <span className="text-sm font-pixel uppercase tracking-widest text-black/20">
                             {isLoading ? "Loading..." : `${filtered.length} results`}
@@ -174,7 +173,7 @@ export default function AdminApplications() {
 
                                 <Link
                                     href={`/admin/applications/${app._id}`}
-                                    className="px-8 py-4 bg-black text-white text-[10px] font-pixel uppercase tracking-[0.2em] rounded-2xl flex items-center gap-4 hover:scale-[1.02] active:scale-[0.98] transition-all shadow-xl shadow-black/10"
+                                    className="px-8 py-4 bg-black text-white text-[10px] font-pixel uppercase tracking-widest rounded-2xl flex items-center gap-4 hover:scale-[1.02] active:scale-[0.98] transition-all shadow-xl shadow-black/10"
                                 >
                                     Review Application
                                     <ArrowRightIcon size={16} weight="bold" />

@@ -15,18 +15,18 @@ export default function GlobalError({
   }, [error]);
 
   return (
-    <main className="min-h-screen bg-black text-white flex flex-col items-center justify-center px-4">
+    <main className="min-h-screen bg-background-2 text-white flex flex-col items-center justify-center px-4">
       <div className="max-w-sm w-full space-y-8 text-center">
         <div className="space-y-1">
-          <p className="font-pixel text-xs uppercase text-zinc-500">
-            Seni<span className="opacity-40">matik</span>
+          <p className="font-pixel text-base uppercase text-white">
+            Seni<span className="text-primary">matik</span>
           </p>
-          <h1 className="text-8xl font-bold tracking-tighter text-zinc-700">500</h1>
+          <h1 className="text-8xl font-bold text-primary">500</h1>
         </div>
 
         <div className="space-y-2">
-          <h2 className="text-2xl font-medium tracking-tight">Server Error</h2>
-          <p className="text-sm text-zinc-500 font-light">
+          <h2 className="text-2xl font-medium">Server Error</h2>
+          <p className="text-sm text-muted font-light">
             Something went wrong on our end. Please try again.
           </p>
         </div>

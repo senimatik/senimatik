@@ -39,12 +39,12 @@ export function Step5Royalty() {
   );
 
   return (
-    <div className="space-y-12">
-      <div className="space-y-4">
-        <h3 className="text-2xl font-medium tracking-tight">
+    <div className="space-y-6">
+      <div>
+        <h3 className="text-2xl font-medium mb-1">
           Royalty & Revenue Share
         </h3>
-        <p className="text-zinc-500 text-sm font-light leading-relaxed max-w-md">
+        <p className="text-muted text-base">
           Set the royalty percentage and decide who gets paid from secondary sales.
           Payments are automatic and split according to your distribution.
         </p>
@@ -59,7 +59,7 @@ export function Step5Royalty() {
                 Royalty
               </label>
               <div className="flex items-baseline gap-2 mt-4">
-                <span className="text-5xl font-medium tracking-tighter">
+                <span className="text-5xl font-medium">
                   {royaltyPct}
                 </span>
                 <span className="text-xl text-zinc-400 font-light">%</span>
@@ -75,10 +75,10 @@ export function Step5Royalty() {
             {...register("royaltyBasisPoints", { valueAsNumber: true })}
             className="w-full h-1 bg-zinc-100 rounded-full appearance-none cursor-pointer accent-black"
           />
-          <div className="flex justify-between text-xs font-pixel uppercase tracking-[0.2em] text-black">
-            <span>Min_0%</span>
-            <span>Med_25%</span>
-            <span>Max_50%</span>
+          <div className="flex justify-between text-xs font-pixel uppercase tracking-widest text-black">
+            <span>Min 0%</span>
+            <span>Med 25%</span>
+            <span>Max 50%</span>
           </div>
         </div>
 
@@ -89,12 +89,12 @@ export function Step5Royalty() {
               <label className="text-lg font-pixel uppercase tracking-widest text-black">
                 Share Distribution
               </label>
-              <p className="text-sm text-zinc-400">
+              <p className="text-sm text-muted">
                 To add more recipients, reduce your share percentage first.
               </p>
             </div>
             <Button
-              variant="ghost"
+              variant="outline"
               type="button"
               onClick={() => {
                 if (totalShares < 100) {
@@ -147,7 +147,7 @@ export function Step5Royalty() {
                       placeholder="100"
                       className="w-full h-10 border-input border bg-white px-3 text-sm text-center font-medium focus:bg-white outline-none"
                     />
-                    <span className="text-center text-sm font-pixel uppercase text-zinc-300">
+                    <span className="text-center text-base font-pixel text-muted">
                       %
                     </span>
                   </div>
@@ -166,11 +166,10 @@ export function Step5Royalty() {
           </div>
 
           <div
-            className={`flex items-center justify-between p-6 transition-all duration-500 ${
-              totalShares === 100
+            className={`flex items-center justify-between p-6 transition-all duration-500 ${totalShares === 100
                 ? "bg-green-500/5 text-green-600 border border-green-500/10"
                 : "bg-orange-500/5 text-orange-600 border border-orange-500/10"
-            }`}
+              }`}
           >
             <span className="text-sm font-pixel uppercase tracking-widest">
               Aggregate Split Status

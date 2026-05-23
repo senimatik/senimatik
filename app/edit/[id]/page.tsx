@@ -10,7 +10,7 @@ import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
 import { Button } from "@/components/ui/button";
 import { useForm, useFieldArray, useWatch } from "react-hook-form";
-import { ArrowLeftIcon, TrashIcon } from "@phosphor-icons/react";
+import { ArrowLeftIcon, TrashIcon, XIcon } from "@phosphor-icons/react";
 import { motion, AnimatePresence } from "framer-motion";
 import { Input } from "@/components/ui/input";
 import { useWalletAddress } from "@/lib/hooks/useWalletAddress";
@@ -126,7 +126,7 @@ function SortableImageItem({
       <div
         {...attributes}
         {...listeners}
-        className="absolute top-2 left-2 p-1.5 bg-black/40 backdrop-blur-md border border-white/20 rounded opacity-0 group-hover:opacity-100 transition-opacity cursor-grab active:cursor-grabbing"
+        className="absolute top-2 left-2 p-1.5 bg-black/40 backdrop-blur-md border border-white/20 opacity-0 group-hover:opacity-100 transition-opacity cursor-grab active:cursor-grabbing"
       >
         <DotsSixVerticalIcon size={14} weight="bold" className="text-white" />
       </div>
@@ -134,7 +134,7 @@ function SortableImageItem({
       {/* Delete button */}
       <button
         onClick={() => onDelete(image.r2Key)}
-        className="absolute top-2 right-2 p-1.5 bg-red-500/80 hover:bg-red-600 backdrop-blur-md border border-red-400/50 rounded opacity-0 group-hover:opacity-100 transition-opacity"
+        className="absolute top-2 right-2 p-1.5 bg-red-500/80 hover:bg-red-600 backdrop-blur-md border border-red-400/50 opacity-0 group-hover:opacity-100 transition-opacity"
       >
         <TrashIcon size={14} weight="bold" className="text-white" />
       </button>
@@ -279,10 +279,10 @@ function SupplementaryImagesSection({
   return (
     <section className="space-y-6 pb-8 border-b border-black/5">
       <div>
-        <label className="text-sm font-pixel uppercase tracking-widest text-black">
+        <label className="text-base font-pixel uppercase tracking-widest text-black">
           Supplementary Images
         </label>
-        <p className="text-xs text-zinc-400 leading-relaxed mt-1">
+        <p className="text-sm text-muted leading-relaxed">
           Add up to {MAX_SUPPLEMENTARY_IMAGES} additional images. Max {MAX_TOTAL_SIZE / 1024 / 1024}MB total. Auto-converted to WebP.
         </p>
       </div>
@@ -310,7 +310,7 @@ function SupplementaryImagesSection({
               </div>
             </SortableContext>
           </DndContext>
-          <p className="text-xs text-zinc-400">
+          <p className="text-sm text-muted">
             {supplementaryImages.length}/{MAX_SUPPLEMENTARY_IMAGES} images
           </p>
         </div>
@@ -319,24 +319,23 @@ function SupplementaryImagesSection({
       {/* Upload dropzone */}
       <div
         {...getRootProps()}
-        className={`border-2 border-dashed p-8 text-center transition-colors ${
-          canAddMore && !uploading
+        className={`border-2 border-dashed p-8 text-center transition-colors ${canAddMore && !uploading
             ? "border-zinc-300 hover:border-black/30 cursor-pointer"
             : "border-zinc-200 bg-zinc-50/30 cursor-not-allowed opacity-60"
-        }`}
+          }`}
       >
         <input {...getInputProps()} />
-        <CloudArrowUpIcon size={32} className="mx-auto mb-2 text-zinc-400" />
-        <p className="text-sm font-medium">
+        <CloudArrowUpIcon size={32} className="mx-auto mb-2 text-muted" />
+        <p className="text-base font-medium">
           {uploading ? "Uploading..." : "Drag images here or click to browse"}
         </p>
-        <p className="text-xs text-zinc-400 mt-1">
+        <p className="text-sm text-muted">
           {(remainingSize / 1024 / 1024).toFixed(1)}MB remaining
         </p>
       </div>
 
       {error && (
-        <div className="p-3 bg-red-50 border border-red-200 rounded text-sm text-red-700">
+        <div className="p-3 bg-red-50 border border-red-200 text-sm text-red-700">
           {error}
         </div>
       )}
@@ -503,7 +502,7 @@ export default function EditArtworkPage() {
       <main className="min-h-screen bg-white">
         <Navbar variant="dark" />
         <div className="max-w-7xl mx-auto flex items-center justify-center h-96">
-          <p className="text-zinc-500">Loading artwork...</p>
+          <p className="text-muted">Loading artwork...</p>
         </div>
         <Footer variant="dark" />
       </main>
@@ -518,23 +517,25 @@ export default function EditArtworkPage() {
         <Button variant="ghost" onClick={() => router.back()} className="mb-8">
           <ArrowLeftIcon size={16} /> Back
         </Button>
-        <h1 className="text-4xl font-medium tracking-tight text-black mb-2">Edit Artwork</h1>
-        <p className="text-zinc-500 mb-12">Update marketplace details for your artwork.</p>
+        <h1 className="text-4xl font-bold tracking-tight text-black mb-2">Edit Artwork</h1>
+        <p className="text-muted text-base mb-12">Update marketplace details for your artwork.</p>
 
         <form onSubmit={handleSubmit(onSubmit)} className="space-y-12">
           {/* License Pricing */}
           <section className="space-y-6 pb-8 border-b border-black/5">
-            <h2 className="text-2xl font-medium">License Pricing</h2>
-            <p className="text-sm text-zinc-500">
-              Update prices for each license type offered with this artwork.
-            </p>
+            <div>
+              <h2 className="text-base font-pixel uppercase tracking-widest text-black">License Pricing</h2>
+              <p className="text-sm text-muted leading-relaxed">
+                Update prices for each license type offered with this artwork.
+              </p>
+            </div>
 
             <div className="space-y-4">
               {licenseOptionFields.map((field, idx) => {
                 const licenseLabel = field.licenseType === "personal_use" ? "Personal Use"
                   : field.licenseType === "commercial_digital" ? "Commercial Digital"
-                  : field.licenseType === "limited_print" ? "Limited Print"
-                  : field.licenseType;
+                    : field.licenseType === "limited_print" ? "Limited Print"
+                      : field.licenseType;
                 const showResaleMin = field.licenseType === "personal_use" || field.licenseType === "limited_print";
 
                 return (
@@ -542,7 +543,7 @@ export default function EditArtworkPage() {
                     <h3 className="font-medium">{licenseLabel}</h3>
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                       <div>
-                        <label className="block text-xs font-pixel uppercase tracking-widest text-zinc-500 mb-2">
+                        <label className="block text-xs font-pixel uppercase tracking-widest text-muted">
                           Price (USD)
                         </label>
                         <Input
@@ -555,7 +556,7 @@ export default function EditArtworkPage() {
                       </div>
                       {showResaleMin && (
                         <div>
-                          <label className="block text-xs font-pixel uppercase tracking-widest text-zinc-500 mb-2">
+                          <label className="block text-xs font-pixel uppercase tracking-widest text-muted">
                             Min Resale Price (USD)
                           </label>
                           <Input
@@ -577,10 +578,10 @@ export default function EditArtworkPage() {
           {/* Original Description (Read-only) */}
           <section className="space-y-6 pb-8 border-b border-black/5">
             <div className="space-y-4">
-              <label className="text-sm font-pixel uppercase tracking-widest text-black">
+              <label className="text-base font-pixel uppercase tracking-widest text-black">
                 Original Description <span className="text-red-500">*</span>
               </label>
-              <p className="text-xs text-zinc-400 leading-relaxed">
+              <p className="text-sm text-muted leading-relaxed">
                 Description set during creation. Cannot be edited.
               </p>
               <div className="w-full px-4 py-3 border border-black/10 min-h-24 bg-zinc-50/50 text-zinc-600 leading-relaxed">
@@ -592,10 +593,10 @@ export default function EditArtworkPage() {
           {/* Marketplace Description (Editable) */}
           <section className="space-y-6 pb-8 border-b border-black/5">
             <div className="space-y-4">
-              <label className="text-sm font-pixel uppercase tracking-widest text-black">
+              <label className="text-base font-pixel uppercase tracking-widest text-black">
                 Details / Long Description
               </label>
-              <p className="text-xs text-zinc-400 leading-relaxed">
+              <p className="text-sm text-muted leading-relaxed">
                 Edit the detailed description that appears on the marketplace. Can be changed anytime.
               </p>
               <textarea
@@ -609,7 +610,7 @@ export default function EditArtworkPage() {
           {/* Tags */}
           <section className="space-y-6">
             <div className="space-y-4 border-b border-black/5 pb-8">
-              <label className="text-sm font-pixel uppercase tracking-widest text-black">
+              <label className="text-base font-pixel uppercase tracking-widest text-black">
                 Tags
               </label>
               <div className="flex gap-2">
@@ -636,9 +637,9 @@ export default function EditArtworkPage() {
                   {tags.map((tag: string, idx: number) => (
                     <div
                       key={idx}
-                      className="px-3 py-1 bg-zinc-100 rounded-full flex items-center gap-2"
+                      className="px-3 py-1 bg-primary flex items-center gap-2"
                     >
-                      <span className="text-xs">{tag}</span>
+                      <span className="text-base text-white">{tag}</span>
                       <button
                         type="button"
                         onClick={() => {
@@ -648,15 +649,15 @@ export default function EditArtworkPage() {
                             currentTags.filter((_, i) => i !== idx)
                           );
                         }}
-                        className="text-zinc-400 hover:text-black transition-colors"
+                        className="text-white hover:text-red-500 transition-colors cursor-pointer"
                       >
-                        ×
+                        <XIcon size={16} />
                       </button>
                     </div>
                   ))}
                 </div>
               )}
-              <p className="text-xs text-zinc-400">
+              <p className="text-sm text-muted">
                 {tags.length}/10 tags • Help collectors discover your work
               </p>
             </div>
@@ -672,7 +673,7 @@ export default function EditArtworkPage() {
           {/* Traits */}
           <section className="space-y-6 pb-8 border-b border-black/5">
             <div className="flex justify-between items-center">
-              <h2 className="text-2xl font-medium">Traits</h2>
+              <h2 className="text-base font-pixel uppercase tracking-widest text-black">Traits</h2>
               <Button
                 type="button"
                 variant="outline"
@@ -684,7 +685,7 @@ export default function EditArtworkPage() {
             </div>
             <div className="space-y-3">
               {attributeFields.map((field, idx) => (
-                <div key={field.id} className="flex gap-3">
+                <div key={field.id} className="flex items-center gap-3">
                   <Input
                     {...register(`attributes.${idx}.trait_type`)}
                     placeholder="Trait type"
@@ -709,7 +710,7 @@ export default function EditArtworkPage() {
 
           {/* Collection */}
           <section className="space-y-6 pb-8 border-b border-black/5">
-            <h2 className="text-2xl font-medium">Collection</h2>
+            <h2 className="text-base font-pixel uppercase tracking-widest text-black">Collection</h2>
             <div className="space-y-4">
               {/* Collection mode selection */}
               <div className="flex gap-3">
@@ -720,7 +721,7 @@ export default function EditArtworkPage() {
                     value="none"
                     className="w-4 h-4"
                   />
-                  <span className="text-sm">No Collection</span>
+                  <span className="text-base">No Collection</span>
                 </label>
                 <label className="flex items-center gap-2 cursor-pointer">
                   <input
@@ -729,7 +730,7 @@ export default function EditArtworkPage() {
                     value="existing"
                     className="w-4 h-4"
                   />
-                  <span className="text-sm">Existing Collection</span>
+                  <span className="text-base">Existing Collection</span>
                 </label>
                 <label className="flex items-center gap-2 cursor-pointer">
                   <input
@@ -738,14 +739,14 @@ export default function EditArtworkPage() {
                     value="new"
                     className="w-4 h-4"
                   />
-                  <span className="text-sm">Create New</span>
+                  <span className="text-base">Create New</span>
                 </label>
               </div>
 
               {/* Existing collection selector */}
               {collectionMode === "existing" && (
                 <div>
-                  <label className="block text-sm font-medium mb-2">Select Collection</label>
+                  <label className="block text-base font-pixel uppercase tracking-widest text-black mb-2 mt-4">Select Collection</label>
                   <select
                     {...register("collectionId")}
                     className="w-full px-3 py-2 border border-black/10"
@@ -762,9 +763,9 @@ export default function EditArtworkPage() {
 
               {/* New collection form */}
               {collectionMode === "new" && (
-                <div className="space-y-4 p-4 bg-zinc-50/50 border border-zinc-100">
+                <div className="space-y-4 p-4 bg-zinc-50/50 border border-zinc-100 mt-4">
                   <div>
-                    <label className="block text-sm font-medium mb-2">Collection Name</label>
+                    <label className="block text-base font-pixel uppercase tracking-widest text-black mb-2">Collection Name</label>
                     <Input
                       {...register("newCollection.name")}
                       placeholder="e.g., Summer Series"
@@ -772,7 +773,7 @@ export default function EditArtworkPage() {
                     />
                   </div>
                   <div>
-                    <label className="block text-sm font-medium mb-2">Description</label>
+                    <label className="block text-base font-pixel uppercase tracking-widest text-black mb-2">Description</label>
                     <textarea
                       {...register("newCollection.description")}
                       placeholder="Collection description (optional)"
@@ -786,193 +787,193 @@ export default function EditArtworkPage() {
 
           {/* Print Sizes - Only show for non-commercial licenses */}
           {artwork?.licenseOptions?.some(opt => opt.licenseType !== "commercial_digital") && (
-          <section className="space-y-6 pb-8 border-b border-black/5">
-            <div className="space-y-1">
-              <label className="text-lg font-pixel uppercase tracking-widest text-black">
-                Available Print Sizes
-              </label>
-              <p className="text-sm text-zinc-400">
-                Define the physical sizes buyers can order.
-              </p>
-            </div>
-
-            {/* Preset quick-add buttons */}
-            <div className="space-y-3">
-              <div className="flex flex-wrap gap-2">
-                {PRESET_SIZES.map((preset) => (
-                  <button
-                    key={preset.label}
-                    type="button"
-                    onClick={() => addPresetSize(preset)}
-                    className="px-3 py-1.5 border border-black/10 rounded text-sm hover:bg-black/5 transition-colors"
-                  >
-                    + {preset.label}
-                  </button>
-                ))}
-
-                {/* Custom size input */}
-                <button
-                  type="button"
-                  onClick={() =>
-                    appendPrintSize({
-                      label: "",
-                      widthCm: 0,
-                      heightCm: 0,
-                      priceAddon: 0,
-                    })
-                  }
-                  className="text-sm font-medium text-zinc-600 hover:text-black transition-colors cursor-pointer"
-                >
-                  + Add custom size
-                </button>
+            <section className="space-y-6 pb-8 border-b border-black/5">
+              <div className="space-y-1">
+                <label className="text-base font-pixel uppercase tracking-widest text-black">
+                  Available Print Sizes
+                </label>
+                <p className="text-sm text-muted leading-relaxed">
+                  Define the physical sizes buyers can order.
+                </p>
               </div>
-            </div>
 
-            {/* Size rows */}
-            <div className="space-y-3">
-              {/* Headers */}
-              <div className="grid grid-cols-12 gap-2 items-center text-xs font-pixel uppercase tracking-widest text-zinc-400 pb-2 border-b border-zinc-100 mt-6">
-                <div className="col-span-2">Label</div>
-                <div className="col-span-2">Width (cm)</div>
-                <div className="col-span-2">Height (cm)</div>
-                <div className="col-span-5">Price Add (USDC)</div>
-                <div className="col-span-1"></div>
+              {/* Preset quick-add buttons */}
+              <div className="space-y-3">
+                <div className="flex flex-wrap gap-2">
+                  {PRESET_SIZES.map((preset) => (
+                    <button
+                      key={preset.label}
+                      type="button"
+                      onClick={() => addPresetSize(preset)}
+                      className="px-3 py-1.5 border border-black/10 text-base hover:bg-black/5 transition-colors"
+                    >
+                      + {preset.label}
+                    </button>
+                  ))}
+
+                  {/* Custom size input */}
+                  <button
+                    type="button"
+                    onClick={() =>
+                      appendPrintSize({
+                        label: "",
+                        widthCm: 0,
+                        heightCm: 0,
+                        priceAddon: 0,
+                      })
+                    }
+                    className="text-base font-medium text-muted hover:text-primary transition-colors cursor-pointer"
+                  >
+                    + Add custom size
+                  </button>
+                </div>
               </div>
 
               {/* Size rows */}
-              <AnimatePresence>
-                {printSizeFields.map((field, idx) => (
-                  <motion.div
-                    key={field.id}
-                    exit={{ opacity: 0, x: 10 }}
-                    className="grid grid-cols-12 gap-2 items-center animate-in fade-in slide-in-from-left-2 duration-300"
-                    style={{ animationDelay: `${idx * 0.05}s`, animationFillMode: "both" }}
-                  >
-                    <div className="col-span-2">
-                      <Input
-                        {...register(`printSizes.${idx}.label`)}
-                        placeholder="e.g., A4"
-                        className="w-full mt-0"
-                      />
-                    </div>
-                    <div className="col-span-2">
-                      <Input
-                        type="number"
-                        step="0.1"
-                        {...register(`printSizes.${idx}.widthCm`, { valueAsNumber: true })}
-                        placeholder="0"
-                        className="w-full mt-0"
-                      />
-                    </div>
-                    <div className="col-span-2">
-                      <Input
-                        type="number"
-                        step="0.1"
-                        {...register(`printSizes.${idx}.heightCm`, { valueAsNumber: true })}
-                        placeholder="0"
-                        className="w-full mt-0"
-                      />
-                    </div>
-                    <div className="col-span-5">
-                      <Input
-                        type="number"
-                        step={0.01}
-                        {...register(`printSizes.${idx}.priceAddon`, { valueAsNumber: true })}
-                        placeholder="0.00"
-                        className="w-full mt-0"
-                      />
-                    </div>
-                    <div className="col-span-1">
-                      <Button
-                        variant="ghostDestructive"
-                        type="button"
-                        onClick={() => removePrintSize(idx)}
-                      >
-                        <TrashIcon size={20} />
-                      </Button>
-                    </div>
-                  </motion.div>
-                ))}
-              </AnimatePresence>
-            </div>
-          </section>
+              <div className="space-y-3">
+                {/* Headers */}
+                <div className="grid grid-cols-12 gap-2 items-center text-sm font-pixel uppercase tracking-widest text-muted pb-2 border-b border-zinc-100 mt-6">
+                  <div className="col-span-2">Label</div>
+                  <div className="col-span-2">Width (cm)</div>
+                  <div className="col-span-2">Height (cm)</div>
+                  <div className="col-span-5">Price Add (USDC)</div>
+                  <div className="col-span-1"></div>
+                </div>
+
+                {/* Size rows */}
+                <AnimatePresence>
+                  {printSizeFields.map((field, idx) => (
+                    <motion.div
+                      key={field.id}
+                      exit={{ opacity: 0, x: 10 }}
+                      className="grid grid-cols-12 gap-2 items-center animate-in fade-in slide-in-from-left-2 duration-300"
+                      style={{ animationDelay: `${idx * 0.05}s`, animationFillMode: "both" }}
+                    >
+                      <div className="col-span-2">
+                        <Input
+                          {...register(`printSizes.${idx}.label`)}
+                          placeholder="e.g., A4"
+                          className="w-full mt-0"
+                        />
+                      </div>
+                      <div className="col-span-2">
+                        <Input
+                          type="number"
+                          step="0.1"
+                          {...register(`printSizes.${idx}.widthCm`, { valueAsNumber: true })}
+                          placeholder="0"
+                          className="w-full mt-0"
+                        />
+                      </div>
+                      <div className="col-span-2">
+                        <Input
+                          type="number"
+                          step="0.1"
+                          {...register(`printSizes.${idx}.heightCm`, { valueAsNumber: true })}
+                          placeholder="0"
+                          className="w-full mt-0"
+                        />
+                      </div>
+                      <div className="col-span-5">
+                        <Input
+                          type="number"
+                          step={0.01}
+                          {...register(`printSizes.${idx}.priceAddon`, { valueAsNumber: true })}
+                          placeholder="0.00"
+                          className="w-full mt-0"
+                        />
+                      </div>
+                      <div className="col-span-1">
+                        <Button
+                          variant="ghostDestructive"
+                          type="button"
+                          onClick={() => removePrintSize(idx)}
+                        >
+                          <TrashIcon size={20} />
+                        </Button>
+                      </div>
+                    </motion.div>
+                  ))}
+                </AnimatePresence>
+              </div>
+            </section>
           )}
 
           {/* Shipping Rates - Only show for non-commercial licenses */}
           {artwork?.licenseOptions?.some(opt => opt.licenseType !== "commercial_digital") && (
-          <section className="space-y-6 pb-8 border-b border-black/5">
-            <div className="space-y-1">
-              <label className="text-lg font-pixel uppercase tracking-widest text-black">
-                Shipping &amp; Delivery
-              </label>
-              <p className="text-sm text-zinc-400">
-                Set courier pricing by destination region. Ships from Malaysia.
-              </p>
-            </div>
-
-            {/* Shipping table */}
-            <div className="space-y-3">
-              {/* Headers */}
-              <div className="grid grid-cols-4 gap-2 items-center text-xs font-pixel uppercase tracking-widest text-zinc-400 pb-2 border-b border-zinc-100 mt-6">
-                <div>Region</div>
-                <div>Method</div>
-                <div>Price (USDC)</div>
-                <div>Estimated Days</div>
+            <section className="space-y-6 pb-8 border-b border-black/5">
+              <div className="space-y-1">
+                <label className="text-base font-pixel uppercase tracking-widest text-black">
+                  Shipping &amp; Delivery
+                </label>
+                <p className="text-sm text-muted leading-relaxed">
+                  Set courier pricing by destination region. Ships from Malaysia.
+                </p>
               </div>
 
-              {/* Shipping rows */}
-              {shippingFields.map((field, idx) => {
-                const zoneValue = field.zone || "";
-                const zoneDisplay = zoneValue
-                  .replace(/_/g, " ")
-                  .split(" ")
-                  .map((word) => word.charAt(0).toUpperCase() + word.slice(1))
-                  .join(" ");
+              {/* Shipping table */}
+              <div className="space-y-3">
+                {/* Headers */}
+                <div className="grid grid-cols-4 gap-2 items-center text-sm font-pixel uppercase tracking-widest text-muted pb-2 border-b border-zinc-100 mt-6">
+                  <div>Region</div>
+                  <div>Method</div>
+                  <div>Price (USDC)</div>
+                  <div>Estimated Days</div>
+                </div>
 
-                return (
-                  <div
-                    key={field.id}
-                    className="grid grid-cols-4 gap-2 items-center animate-in fade-in slide-in-from-bottom-2 duration-300"
-                    style={{ animationDelay: `${idx * 0.05}s`, animationFillMode: "both" }}
-                  >
-                    <div className="text-lg font-medium text-black">
-                      {zoneDisplay}
+                {/* Shipping rows */}
+                {shippingFields.map((field, idx) => {
+                  const zoneValue = field.zone || "";
+                  const zoneDisplay = zoneValue
+                    .replace(/_/g, " ")
+                    .split(" ")
+                    .map((word) => word.charAt(0).toUpperCase() + word.slice(1))
+                    .join(" ");
+
+                  return (
+                    <div
+                      key={field.id}
+                      className="grid grid-cols-4 gap-2 items-center animate-in fade-in slide-in-from-bottom-2 duration-300"
+                      style={{ animationDelay: `${idx * 0.05}s`, animationFillMode: "both" }}
+                    >
+                      <div className="text-base font-medium text-black">
+                        {zoneDisplay}
+                      </div>
+                      <Input
+                        {...register(`shippingRates.${idx}.method`)}
+                        disabled
+                        className="mt-0"
+                      />
+                      <Input
+                        type="number"
+                        step={0.01}
+                        {...register(`shippingRates.${idx}.price`, { valueAsNumber: true })}
+                        placeholder="0.00"
+                        className="mt-0"
+                      />
+                      <Input
+                        {...register(`shippingRates.${idx}.estimatedDays`)}
+                        placeholder="e.g., 5-7 days"
+                        disabled
+                        className="mt-0 text-zinc-400"
+                      />
                     </div>
-                    <Input
-                      {...register(`shippingRates.${idx}.method`)}
-                      disabled
-                      className="mt-0"
-                    />
-                    <Input
-                      type="number"
-                      step={0.01}
-                      {...register(`shippingRates.${idx}.price`, { valueAsNumber: true })}
-                      placeholder="0.00"
-                      className="mt-0"
-                    />
-                    <Input
-                      {...register(`shippingRates.${idx}.estimatedDays`)}
-                      placeholder="e.g., 5-7 days"
-                      disabled
-                      className="mt-0 text-zinc-400"
-                    />
-                  </div>
-                );
-              })}
-            </div>
-            <p className="text-sm text-zinc-400">
-              Shipping integration coming soon. Prices are manually set for now.
-            </p>
-          </section>
+                  );
+                })}
+              </div>
+              <p className="text-base text-muted">
+                Shipping integration coming soon. Prices are manually set for now.
+              </p>
+            </section>
           )}
 
           {/* Actions */}
-          <div className="flex gap-4 pt-8">
-            <Button type="submit" variant="default" size="main">
-              Save Changes
-            </Button>
+          <div className="flex justify-end gap-4">
             <Button type="button" variant="outline" size="main" onClick={() => router.back()}>
               Cancel
+            </Button>
+            <Button type="submit" variant="default" size="main">
+              Save Changes
             </Button>
           </div>
         </form>

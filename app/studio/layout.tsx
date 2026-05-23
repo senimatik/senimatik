@@ -19,17 +19,16 @@ export default function StudioLayout({ children }: { children: React.ReactNode }
       <Navbar variant="dark" />
 
       {/* Sub-nav tabs */}
-      <div className="max-w-7xl mx-auto px-4 xl:px-0 mt-16">
+      <div className="mx-auto px-4 lg:px-12 mt-12">
         <nav className="flex gap-12 border-b border-black/5">
           {TABS.map((tab) => (
             <Link
               key={tab.href}
               href={tab.href}
-              className={`pb-6 text-sm uppercase font-pixel tracking-[0.2em] transition-all relative ${
-                pathname === tab.href
-                  ? "text-black font-bold"
-                  : "text-zinc-600 hover:text-zinc-400"
-              }`}
+              className={`pb-6 text-base uppercase font-pixel tracking-widest transition-all relative ${pathname === tab.href
+                  ? "text-primary font-bold"
+                  : "text-muted hover:text-primary"
+                }`}
             >
               {tab.label}
               {pathname === tab.href && (
@@ -44,7 +43,7 @@ export default function StudioLayout({ children }: { children: React.ReactNode }
       </div>
 
       {/* Content */}
-      <div className="max-w-7xl mx-auto">
+      <div className="w-full mx-auto px-4 lg:px-12">
         {children}
       </div>
 

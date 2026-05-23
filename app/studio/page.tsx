@@ -19,8 +19,8 @@ const R2_URL = process.env.NEXT_PUBLIC_R2_PUBLIC_URL!;
 
 function StatCard({ label, value }: { label: string; value: string | number }) {
   return (
-    <div className="border border-black/5 rounded-xl p-6">
-      <p className="font-pixel text-[9px] uppercase tracking-[0.3em] text-zinc-400 mb-2">{label}</p>
+    <div className="border border-black/5 p-6">
+      <p className="font-pixel text-base uppercase tracking-widest text-muted mb-2">{label}</p>
       <p className="text-2xl font-bold tracking-tight">{value}</p>
     </div>
   );
@@ -76,7 +76,7 @@ export default function StudioPage() {
   if (!isConnected) {
     return (
       <div className="max-w-7xl mx-auto px-4 py-40 flex flex-col items-center gap-4">
-        <p className="font-pixel text-[10px] uppercase tracking-[0.3em] opacity-40">
+        <p className="font-pixel text-base uppercase tracking-widest text-muted">
           Connect wallet to view your studio
         </p>
       </div>
@@ -92,17 +92,17 @@ export default function StudioPage() {
           onClick={() => setConfirmAction(null)}
         >
           <div
-            className="bg-white rounded-2xl p-8 max-w-sm w-full shadow-2xl flex flex-col gap-6"
+            className="bg-white p-8 max-w-sm w-full shadow-2xl flex flex-col gap-6"
             onClick={(e) => e.stopPropagation()}
           >
             <div className="flex flex-col gap-2">
               <div className="flex items-center gap-2">
-                <WarningIcon size={18} weight="fill" className={confirmAction.type === "unlist" ? "text-red-500" : "text-black"} />
+                <WarningIcon size={18} weight="fill" className={confirmAction.type === "unlist" ? "text-red-500" : "text-primary"} />
                 <h2 className="font-bold text-lg tracking-tight">
                   {confirmAction.type === "publish" ? "List Artwork" : "Unlist Artwork"}
                 </h2>
               </div>
-              <p className="text-sm text-zinc-500">
+              <p className="text-sm text-muted">
                 {confirmAction.type === "publish"
                   ? <>Are you sure you want to list <span className="font-semibold text-black">{confirmAction.name}</span> on Discover? Buyers will be able to purchase it.</>
                   : <>Are you sure you want to unlist <span className="font-semibold text-black">{confirmAction.name}</span>? It will be removed from Discover and no new purchases can be made.</>
@@ -112,17 +112,16 @@ export default function StudioPage() {
             <div className="flex gap-3">
               <button
                 onClick={() => setConfirmAction(null)}
-                className="flex-1 border border-black/10 text-sm font-medium py-2.5 rounded-xl hover:bg-zinc-50 transition-colors"
+                className="flex-1 border border-black/10 text-sm font-medium py-2.5 hover:bg-zinc-50 transition-colors cursor-pointer"
               >
                 Cancel
               </button>
               <button
                 onClick={handleConfirm}
-                className={`flex-1 text-sm font-medium py-2.5 rounded-xl transition-colors ${
-                  confirmAction.type === "publish"
-                    ? "bg-black text-white hover:bg-zinc-800"
+                className={`flex-1 text-sm font-medium py-2.5 transition-colors cursor-pointer ${confirmAction.type === "publish"
+                    ? "bg-primary text-white hover:opacity-90"
                     : "bg-red-500 text-white hover:bg-red-600"
-                }`}
+                  }`}
               >
                 {confirmAction.type === "publish" ? "Yes, List It" : "Yes, Unlist It"}
               </button>
@@ -131,11 +130,11 @@ export default function StudioPage() {
         </div>
       )}
 
-      <div className="max-w-7xl mx-auto py-16">
+      <div className="w-full mx-auto py-16">
         {/* Header */}
         <div className="mb-10">
-          <h1 className="text-4xl font-bold tracking-tighter mb-1">Artworks</h1>
-          <p className="text-sm text-zinc-500">Manage and track your published artworks</p>
+          <h1 className="text-4xl font-bold mb-1">Artworks</h1>
+          <p className="text-base text-muted">Manage and track your published artworks</p>
         </div>
 
         {/* Stats */}
@@ -148,24 +147,24 @@ export default function StudioPage() {
 
         {/* Manage Artworks */}
         <section className="mb-12">
-          <h2 className="text-xl font-bold tracking-tight mb-4">Manage Artworks</h2>
-          {!myArtworks && <p className="text-sm text-zinc-400">Loading...</p>}
+          <h2 className="text-xl font-bold mb-4">Manage Artworks</h2>
+          {!myArtworks && <p className="text-base text-muted">Loading...</p>}
           {myArtworks && myArtworks.length === 0 && (
-            <div className="py-12 flex flex-col items-center gap-3 border border-dashed border-black/10 rounded-xl">
+            <div className="py-12 flex flex-col items-center gap-3 border border-dashed border-black/10">
               <StorefrontIcon size={28} className="opacity-20" />
-              <p className="font-pixel text-[10px] uppercase tracking-[0.3em] opacity-30">
+              <p className="font-pixel text-base uppercase tracking-widest text-muted">
                 No artworks yet
               </p>
               <Link
                 href="/create"
-                className="text-sm font-medium underline underline-offset-4 opacity-60 hover:opacity-100"
+                className="font-medium underline underline-offset-4 text-muted hover:text-primary"
               >
                 Create artwork
               </Link>
             </div>
           )}
           {myArtworks && myArtworks.length > 0 && (
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 2xl:grid-cols-4 gap-4">
               {myArtworks.map((artwork) => {
                 const isPublished = artwork.status === "listed";
                 const isPublishing = publishingId === artwork._id;
@@ -177,7 +176,7 @@ export default function StudioPage() {
                 return (
                   <div
                     key={artwork._id}
-                    className="border border-black/5 rounded-xl overflow-hidden [content-visibility:auto]"
+                    className="border border-black/5 overflow-hidden [content-visibility:auto]"
                   >
                     <Link href={`/art/${artwork._id}`}>
                       <div className="relative w-full aspect-video bg-zinc-50">
@@ -192,16 +191,15 @@ export default function StudioPage() {
                     </Link>
                     <div className="p-4 flex flex-col gap-2">
                       <div className="flex items-center justify-between gap-2">
-                        <p className="font-bold text-sm tracking-tight truncate">{artwork.name}</p>
+                        <p className="font-bold text-lg tracking-tight truncate">{artwork.name}</p>
                         <span
-                          className={`shrink-0 text-[9px] font-pixel uppercase tracking-widest px-2 py-1 rounded ${
-                            isPublished ? "bg-green-50 text-green-600" : "bg-zinc-100 text-zinc-500"
-                          }`}
+                          className={`shrink-0 text-xs font-pixel uppercase tracking-widest px-2 py-1 ${isPublished ? "bg-green-50 text-green-600" : "bg-zinc-100 text-zinc-500"
+                            }`}
                         >
                           {isPublished ? "Listed" : "Draft"}
                         </span>
                       </div>
-                      <div className="text-xs text-zinc-400">
+                      <div className="text-base text-muted">
                         <span>From {minPrice} USD</span>
                       </div>
 
@@ -212,7 +210,7 @@ export default function StudioPage() {
                             e.preventDefault();
                             router.push(`/edit/${artwork._id}`);
                           }}
-                          className="flex items-center justify-center gap-1 border border-black/10 text-black text-xs font-medium px-3 py-2 rounded-lg hover:bg-zinc-50 transition-colors"
+                          className="flex items-center justify-center gap-1 border border-black/10 text-black text-sm font-medium px-3 py-2 hover:bg-zinc-50 transition-colors cursor-pointer"
                         >
                           <PencilIcon size={12} />
                           Edit
@@ -221,7 +219,7 @@ export default function StudioPage() {
                           <button
                             disabled={isPublishing}
                             onClick={() => setConfirmAction({ type: "publish", id: artwork._id, name: artwork.name })}
-                            className="flex-1 bg-black text-white text-xs font-medium py-2 rounded-lg hover:bg-zinc-800 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+                            className="flex-1 bg-primary text-white text-sm font-medium py-2 hover:bg-zinc-800 transition-colors disabled:opacity-50 disabled:cursor-not-allowed cursor-pointer"
                           >
                             {isPublishing ? "Publishing..." : "Publish"}
                           </button>
@@ -229,7 +227,7 @@ export default function StudioPage() {
                           <button
                             disabled={isUnlisting}
                             onClick={() => setConfirmAction({ type: "unlist", id: artwork._id, name: artwork.name })}
-                            className="flex-1 text-xs font-medium py-2 rounded-lg border border-black/10 hover:bg-red-50 hover:text-red-600 hover:border-red-200 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+                            className="flex-1 text-sm font-medium py-2 border border-black/10 hover:bg-red-50 hover:text-red-600 hover:border-red-200 transition-colors disabled:opacity-50 disabled:cursor-not-allowed cursor-pointer"
                           >
                             {isUnlisting ? "Unlisting..." : "Unlist"}
                           </button>

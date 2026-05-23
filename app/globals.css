@@ -9,11 +9,11 @@
   --card-foreground: oklch(0.141 0.005 285.823);
   --popover: oklch(1 0 0);
   --popover-foreground: oklch(0.141 0.005 285.823);
-  --primary: oklch(0.21 0.006 285.885);
+  --primary: oklch(0.674 0.1238 258.65);
   --primary-foreground: oklch(0.985 0 0);
   --secondary: oklch(0.967 0.001 286.375);
   --secondary-foreground: oklch(0.21 0.006 285.885);
-  --muted: oklch(0.967 0.001 286.375);
+  --muted: oklch(0.6752 0.0144 262.36);
   --muted-foreground: oklch(0.552 0.016 285.938);
   --accent: oklch(0.967 0.001 286.375);
   --accent-foreground: oklch(0.21 0.006 285.885);
@@ -57,7 +57,9 @@
   --tracking-normal: 0em;
   --spacing: 0.25rem;
   --background: oklch(1 0 0);
+  --background-2: oklch(0.0872 0.0101 284.11);
   --foreground: oklch(0.141 0.005 285.823);
+  --tertiary:oklch(0.3386 0.1079 258.88);
 }
 
 .dark {
@@ -112,6 +114,7 @@
   --shadow-lg: 0 1px 3px 0px hsl(0 0% 0% / 0.10), 0 4px 6px -1px hsl(0 0% 0% / 0.10);
   --shadow-xl: 0 1px 3px 0px hsl(0 0% 0% / 0.10), 0 8px 10px -1px hsl(0 0% 0% / 0.10);
   --shadow-2xl: 0 1px 3px 0px hsl(0 0% 0% / 0.25);
+  --tertiary:oklch(0.674 0.1238 258.65);
 }
 
 @theme inline {
@@ -170,6 +173,9 @@
   --radius-2xl: calc(var(--radius) + 8px);
   --radius-3xl: calc(var(--radius) + 12px);
   --radius-4xl: calc(var(--radius) + 16px);
+
+  --color-tertiary: var(--tertiary);
+  --color-background-2: var(--background-2);
 }
 
 @layer base {
@@ -185,12 +191,21 @@
 /* h1, h2, h3, h4, h5, h6, p {
   font-family: var(--font-sans);
 } */
-  .bg-gradient-custom {
+  /* .bg-gradient-custom {
     background: linear-gradient(
       to bottom,
       #020204 3%,
       #052334 44%,
       #2A5063 69%,
+      #D4E3EC 100%
+    );
+  } */
+  .bg-gradient-custom {
+    background: linear-gradient(
+      to bottom,
+      #020204 3%,
+      #0F356E 44%,
+      #A6A0A0 69%,
       #D4E3EC 100%
     );
   }

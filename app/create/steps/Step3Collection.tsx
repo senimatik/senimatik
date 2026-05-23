@@ -28,10 +28,10 @@ export function Step3Collection() {
     });
 
     return (
-        <div className="space-y-12">
-            <div className="space-y-4">
-                <h3 className="text-2xl font-medium tracking-tight">Collection</h3>
-                <p className="text-zinc-500 text-sm font-light leading-relaxed max-w-md">
+        <div className="space-y-6">
+            <div>
+                <h3 className="text-2xl font-medium mb-1">Collection</h3>
+                <p className="text-muted text-base">
                     Keep this art standalone or group it with other artworks in a collection for easier discovery.
                 </p>
             </div>
@@ -78,19 +78,19 @@ export function Step3Collection() {
                 >
                     <div className="flex items-center gap-3 text-zinc-400">
                         <InfoIcon size={18} weight="thin" />
-                        <span className="text-sm font-pixel uppercase tracking-widest leading-none">Collection Details</span>
+                        <span className="text-base font-pixel uppercase tracking-widest leading-none">Collection Details</span>
                     </div>
 
                     <div className="grid grid-cols-1 gap-8">
                         <div className="space-y-3">
-                            <label className="text-sm font-pixel uppercase tracking-widest text-black">Collection Name</label>
+                            <label className="text-base font-pixel uppercase tracking-widest text-black">Collection Name</label>
                             <Input
                                 {...register("newCollection.name")}
                                 placeholder="e.g. Summer Vibes, Digital Series"
                             />
                         </div>
                         <div className="space-y-3">
-                            <label className="text-sm font-pixel uppercase tracking-widest text-black">Description</label>
+                            <label className="text-base font-pixel uppercase tracking-widest text-black">Description</label>
                             <Textarea
                                 {...register("newCollection.description")}
                                 placeholder="Tell collectors what this collection is about..."
@@ -106,7 +106,7 @@ export function Step3Collection() {
                     className="p-8 border border-zinc-100 bg-zinc-50/30 animate-in fade-in slide-in-from-bottom-3 duration-300"
                 >
                     <div className="space-y-3">
-                        <label className="text-sm font-pixel uppercase tracking-widest text-black">Select a Collection</label>
+                        <label className="text-base font-pixel uppercase tracking-widest text-black">Select a Collection</label>
                         <select
                             {...register("collectionId")}
                             className="w-full h-14 mt-2 border border-zinc-100 bg-white px-6 focus:ring-1 focus:ring-black/5 outline-none cursor-pointer"

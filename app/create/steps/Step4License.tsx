@@ -117,6 +117,10 @@ export function Step4License() {
     (opt) => opt.licenseType === "limited_print"
   );
 
+  const hasPhysicalLicense = licenseOptions?.some(
+    (opt) => opt.licenseType === "personal_use" || opt.licenseType === "limited_print"
+  );
+
   const addPresetSize = (preset: (typeof PRESET_SIZES)[0]) => {
     appendSize({
       label: preset.label,
@@ -127,10 +131,10 @@ export function Step4License() {
   };
 
   return (
-    <div className="space-y-12">
-      <div className="space-y-4">
-        <h3 className="text-2xl font-medium tracking-tight">License Types</h3>
-        <p className="text-zinc-500 text-sm font-light leading-relaxed max-w-md">
+    <div className="space-y-6">
+      <div>
+        <h3 className="text-2xl font-medium mb-1">License Types</h3>
+        <p className="text-muted text-base">
           Select one or more license types to offer. Each can have its own price.
           Buyers will choose which license to purchase.
         </p>
@@ -149,7 +153,7 @@ export function Step4License() {
               onClick={() => toggleLicense(tier.value)}
               className={`p-6 border text-left flex flex-col gap-5 relative overflow-hidden transition-all ${
                 isActive
-                  ? "border-black bg-black text-white"
+                  ? "border-primary bg-primary text-white"
                   : "border-zinc-100 bg-zinc-50/50 hover:border-zinc-200"
               }`}
             >
@@ -162,10 +166,10 @@ export function Step4License() {
               </div>
 
               <div className="space-y-1.5">
-                <h4 className="text-sm font-medium">{tier.label}</h4>
+                <h4 className="text-base font-medium">{tier.label}</h4>
                 <p
-                  className={`text-xs leading-relaxed ${
-                    isActive ? "text-white/60" : "text-zinc-400"
+                  className={`text-sm leading-relaxed ${
+                    isActive ? "text-white/40" : "text-muted"
                   }`}
                 >
                   {tier.description}
@@ -179,7 +183,7 @@ export function Step4License() {
                       <CheckIcon
                         size={12}
                         weight="bold"
-                        className={isActive ? "text-white/80" : "text-green-500"}
+                        className={isActive ? "text-white" : "text-green-500"}
                       />
                     ) : (
                       <XIcon
@@ -189,13 +193,13 @@ export function Step4License() {
                       />
                     )}
                     <span
-                      className={`text-[11px] ${
+                      className={`text-sm ${
                         isActive
                           ? f.allowed
-                            ? "text-white/80"
+                            ? "text-white"
                             : "text-white/40"
                           : f.allowed
-                          ? "text-zinc-600"
+                          ? "text-black"
                           : "text-zinc-300"
                       }`}
                     >
@@ -208,7 +212,7 @@ export function Step4License() {
               {/* Checkmark indicator for selected */}
               {isActive && (
                 <div className="absolute top-4 right-4 w-6 h-6 bg-white rounded-full flex items-center justify-center">
-                  <CheckIcon size={14} weight="bold" className="text-black" />
+                  <CheckIcon size={14} weight="bold" className="text-green-500" />
                 </div>
               )}
             </button>
@@ -220,14 +224,14 @@ export function Step4License() {
       {licenseOptions && licenseOptions.length > 0 && (
         <div className="p-8 border border-zinc-100 space-y-8 bg-zinc-50/10 animate-in fade-in slide-in-from-bottom-2 duration-400">
           <div className="flex items-center gap-3 border-b border-zinc-100 pb-4">
-            <InfoIcon size={14} className="text-zinc-400" />
-            <span className="text-sm font-pixel uppercase tracking-widest">
+            <InfoIcon size={14} className="text-muted" />
+            <span className="text-base font-pixel uppercase tracking-widest">
               Pricing — All amounts in USD
             </span>
           </div>
 
           {/* Render pricing inputs for each selected license */}
-          <div className="space-y-8">
+          <div className="space-y-10">
             {licenseOptions.map((option) => {
               const tier = LICENSE_TYPES.find((t) => t.value === option.licenseType);
               if (!tier) return null;
@@ -237,17 +241,17 @@ export function Step4License() {
               return (
                 <div
                   key={option.licenseType}
-                  className="p-6 border border-zinc-100 bg-white space-y-6"
+                  className="bg-white space-y-6"
                 >
                   <div className="flex items-center gap-3">
-                    <tier.icon size={18} className="text-zinc-600" />
-                    <h4 className="font-medium">{tier.label}</h4>
+                    <tier.icon size={18} className="text-primary" />
+                    <h4 className="font-medium text-primary">{tier.label}</h4>
                   </div>
 
                   <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
                     {/* Price */}
-                    <div className="space-y-2">
-                      <label className="text-xs font-pixel uppercase tracking-widest text-zinc-500">
+                    <div>
+                      <label className="text-base font-pixel uppercase tracking-widest text-black">
                         Price
                       </label>
                       <Input
@@ -263,8 +267,8 @@ export function Step4License() {
 
                     {/* Print Limit (limited_print only) */}
                     {tier.hasPrintLimit && (
-                      <div className="space-y-2">
-                        <label className="text-xs font-pixel uppercase tracking-widest text-zinc-500">
+                      <div>
+                        <label className="text-base font-pixel uppercase tracking-widest text-black">
                           Edition Limit
                         </label>
                         <Input
@@ -277,7 +281,7 @@ export function Step4License() {
                           })}
                           placeholder="50"
                         />
-                        <p className="text-[10px] text-zinc-400">
+                        <p className="text-xs text-muted mt-1">
                           Max prints that can be sold. Min 2.
                         </p>
                       </div>
@@ -285,8 +289,8 @@ export function Step4License() {
 
                     {/* Resale Min Price (personal_use, limited_print) */}
                     {tier.hasResaleMin && (
-                      <div className="space-y-2">
-                        <label className="text-xs font-pixel uppercase tracking-widest text-zinc-500">
+                      <div>
+                        <label className="text-base font-pixel uppercase tracking-widest text-black">
                           Min Resale Price
                         </label>
                         <Input
@@ -298,7 +302,7 @@ export function Step4License() {
                           })}
                           placeholder="Optional"
                         />
-                        <p className="text-[10px] text-zinc-400">
+                        <p className="text-xs text-muted mt-1">
                           Floor price for secondary sales.
                         </p>
                       </div>
@@ -314,14 +318,14 @@ export function Step4License() {
             <div className="border-t border-zinc-100 pt-6 space-y-4">
               <div className="space-y-1">
                 <label className="text-lg font-pixel uppercase tracking-widest text-black">
-                  Available Print Sizes
+                  Available Print Sizes (For Limited Edition license)
                 </label>
-                <p className="text-sm text-zinc-400">
-                  Only fill in if there is physical artwork for Limited Edition. Better to limit to one size only.
+                <p className="text-sm text-muted">
+                  Better to limit to one size only.
                 </p>
               </div>
 
-              <div className="flex flex-wrap gap-2">
+              <div className="flex flex-wrap gap-2 mt-6">
                 {PRESET_SIZES.map((preset) => (
                   <button
                     key={preset.label}
@@ -342,14 +346,14 @@ export function Step4License() {
                       priceAddon: 0,
                     })
                   }
-                  className="text-sm font-medium text-zinc-600 hover:text-black transition-colors cursor-pointer"
+                  className="text-base font-medium text-muted hover:text-primary transition-colors cursor-pointer"
                 >
                   + Custom size
                 </button>
               </div>
 
-              <div className="space-y-3 mt-4">
-                <div className="grid grid-cols-12 gap-2 items-center text-xs font-pixel uppercase tracking-widest text-zinc-400 pb-2 border-b border-zinc-100">
+              <div className="space-y-3 mt-6">
+                <div className="grid grid-cols-12 gap-2 items-center text-sm font-pixel uppercase tracking-widest text-zinc-400 pb-2 border-b border-zinc-100">
                   <div className="col-span-2">Label</div>
                   <div className="col-span-2">Width (cm)</div>
                   <div className="col-span-2">Height (cm)</div>
@@ -424,20 +428,20 @@ export function Step4License() {
             </div>
           )}
 
-          {/* Shipping Rates (shown if any physical license selected) */}
-          {hasLimitedPrint && (
+          {/* Shipping Rates (shown if personal_use or limited_print selected) */}
+          {hasPhysicalLicense && (
             <div className="border-t border-zinc-100 pt-6 space-y-4">
               <div className="space-y-1">
                 <label className="text-lg font-pixel uppercase tracking-widest text-black">
                   Shipping &amp; Delivery
                 </label>
-                <p className="text-sm text-zinc-400">
+                <p className="text-sm text-muted">
                   Set courier pricing by destination region. Ships from Malaysia.
                 </p>
               </div>
 
-              <div className="space-y-3">
-                <div className="grid grid-cols-4 gap-2 items-center text-xs font-pixel uppercase tracking-widest text-zinc-400 pb-2 border-b border-zinc-100">
+              <div className="space-y-3 mt-6">
+                <div className="grid grid-cols-4 gap-2 items-center text-sm font-pixel uppercase tracking-widest text-muted pb-2 border-b border-zinc-100">
                   <div>Region</div>
                   <div>Method</div>
                   <div>Price (USD)</div>
@@ -456,7 +460,7 @@ export function Step4License() {
                       key={field.id}
                       className="grid grid-cols-4 gap-2 items-center"
                     >
-                      <div className="text-sm font-medium text-black">
+                      <div className="text-base font-medium text-black">
                         {zoneDisplay}
                       </div>
                       <Input
@@ -482,7 +486,7 @@ export function Step4License() {
                   );
                 })}
               </div>
-              <p className="text-xs text-zinc-400">
+              <p className="text-sm text-muted">
                 Shipping integration coming soon. Prices are manually set for
                 now.
               </p>
@@ -494,7 +498,7 @@ export function Step4License() {
       {/* Empty state */}
       {(!licenseOptions || licenseOptions.length === 0) && (
         <div className="p-8 border border-dashed border-zinc-200 text-center">
-          <p className="text-zinc-400 text-sm">
+          <p className="text-muted text-base">
             Select at least one license type above to set pricing.
           </p>
         </div>

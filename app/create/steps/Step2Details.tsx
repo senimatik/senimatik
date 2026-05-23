@@ -4,7 +4,7 @@ import { useFieldArray, useWatch } from "react-hook-form";
 import { useFormContext } from "../MintFormProvider";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
-import { PlusIcon, TrashIcon, WarningCircleIcon } from "@phosphor-icons/react";
+import { PlusIcon, TrashIcon, WarningCircleIcon, XIcon } from "@phosphor-icons/react";
 import { motion, AnimatePresence } from "framer-motion";
 import { Button } from "@/components/ui/button";
 
@@ -40,12 +40,12 @@ export function Step2Details() {
   };
 
   return (
-    <div className="space-y-12">
-      <div className="space-y-4">
-        <h3 className="text-2xl font-medium tracking-tight">
+    <div className="space-y-6">
+      <div>
+        <h3 className="text-2xl font-medium mb-1">
           Artwork Details
         </h3>
-        <p className="text-zinc-500 text-sm font-light leading-relaxed max-w-md">
+        <p className="text-muted text-base">
           Add information about your artwork. Fields marked with <span className="text-red-500">*</span> are permanent and cannot be edited.
         </p>
       </div>
@@ -71,7 +71,7 @@ export function Step2Details() {
               </div>
             )}
           </div>
-          <div className="space-y-3">
+          <div>
             <label className="text-sm font-pixel uppercase tracking-widest text-black">
               Unit Symbol <span className="text-red-500">*</span>
             </label>
@@ -87,10 +87,10 @@ export function Step2Details() {
         <div className="space-y-3">
           <div className="flex items-start justify-between">
             <div>
-              <label className="text-sm font-pixel uppercase tracking-widest text-black">
+              <label className="text-base font-pixel uppercase tracking-widest text-black">
                 Short Description <span className="text-red-500">*</span>
               </label>
-              <p className="text-xs text-zinc-400 leading-relaxed mt-1">
+              <p className="text-sm text-muted">
                 Brief description that will be permanent and cannot be edited after creation.
               </p>
             </div>
@@ -114,10 +114,10 @@ export function Step2Details() {
         {/* Long Description (Editable Marketplace) */}
         <div className="space-y-3">
           <div>
-            <label className="text-sm font-pixel uppercase tracking-widest text-black">
+            <label className="text-base font-pixel uppercase tracking-widest text-black">
               Details / Long Description
             </label>
-            <p className="text-xs text-zinc-400 leading-relaxed mt-1">
+            <p className="text-sm text-muted">
               Detailed description for the marketplace. Can be edited anytime after creation.
             </p>
           </div>
@@ -128,7 +128,7 @@ export function Step2Details() {
             maxLength={1000}
           />
           <div className="flex justify-end">
-           <span className="text-xs text-zinc-400 whitespace-nowrap">
+           <span className="text-sm text-muted whitespace-nowrap">
               {detailsDescriptionValue?.length || 0}/1000
             </span>
           </div>
@@ -136,7 +136,7 @@ export function Step2Details() {
 
         {/* Tags */}
         <div className="space-y-4 border-b border-zinc-100 pb-6">
-          <label className="text-sm font-pixel uppercase tracking-widest text-black">
+          <label className="text-base font-pixel uppercase tracking-widest text-black">
              Tags
           </label>
           <div className="flex gap-2">
@@ -158,21 +158,21 @@ export function Step2Details() {
               {tags.map((tag, idx) => (
                 <div
                   key={idx}
-                  className="px-3 py-1 bg-zinc-100 rounded-full flex items-center gap-2"
+                  className="px-3 py-1 bg-primary text-white flex items-center gap-2"
                 >
-                  <span className="text-xs">{tag}</span>
+                  <span className="text-sm">{tag}</span>
                   <button
                     type="button"
                     onClick={() => handleRemoveTag(idx)}
-                    className="text-zinc-400 hover:text-black transition-colors"
+                    className="text-white hover:text-red-500 cursor-pointer transition-colors"
                   >
-                    ×
+                    <XIcon size={12} />
                   </button>
                 </div>
               ))}
             </div>
           )}
-          <p className="text-[10px] text-zinc-400">
+          <p className="text-sm text-muted">
             {tags.length}/10 tags • Help collectors discover your work
           </p>
         </div>
@@ -180,11 +180,11 @@ export function Step2Details() {
         {/* Original File Link */}
         <div className="space-y-3 border-b border-zinc-100 pb-6">
           <div>
-            <label className="text-sm font-pixel uppercase tracking-widest text-black">
+            <label className="text-base font-pixel uppercase tracking-widest text-black">
               Original File Link
             </label>
-            <p className="text-xs text-zinc-400 leading-relaxed mt-1">
-              Optional link to your original high-resolution file in any format (TIFF, RAW, PNG, etc.). Buyers will receive this link after purchase.
+            <p className="text-sm text-muted">
+              Optional link to your original high-resolution file. Buyers will receive this link after purchase.
             </p>
           </div>
           <Input
@@ -241,15 +241,15 @@ export function Step2Details() {
         <div className="space-y-6">
           <div className="flex flex-col lg:flex-row gap-6 lg:gap-0 items-start lg:items-center justify-between border-b border-zinc-100 pb-4">
             <div className="space-y-1">
-              <label className="text-sm font-pixel uppercase tracking-widest text-black">
+              <label className="text-base font-pixel uppercase tracking-widest text-black">
                 Trait
               </label>
-              <p className="text-sm text-black font-light italic">
+              <p className="text-sm text-muted">
                 Define custom attributes and rarity tiers.
               </p>
             </div>
             <Button
-              variant="ghost"
+              variant="outline"
               type="button"
               onClick={() => append({ trait_type: "", value: "" })}
             >
