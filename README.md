@@ -55,4 +55,12 @@ A **verified creator licensing marketplace** built on Solana with:
 
 ---
 
+## 📄 License
+
+Copyright © 2026 Senimatik. All rights reserved.
+
+This code is **proprietary**. It is publicly visible for evaluation only (e.g. hackathon judging) and is **not open source**. You may not copy, modify, distribute, or use it without written permission from Senimatik. See [LICENSE](LICENSE) for full terms.
+
+---
+
 **Made with ❤️ for creators and collectors**
